@@ -1,6 +1,8 @@
 from flask import Flask
 from .settings import aws_config
+import mimetypes
 from .extensions import s3
+from .services import file_is_valid
 import os
 from pathlib import Path
 
@@ -18,46 +20,21 @@ def uploading():
     print(currentDir)
     for root, dirs, files in os.walk("backend/simplestyle_4"):
         print(files,root,dirs)
+        
         for name in files:
             extension=Path(name).suffix
-            if extension=='.gif' or extension=='.png':
-                contentType='image/'+extension[1:]
-                print(contentType)
-            elif extension=='.jpeg' or extension=='.jpg':
-                contentType="image/jpeg"
-            elif extension=='.svg':
-                contentType="image/svg+xml"
-            elif extension==".mp3":
-                contentType="audio/mpeg"
-            elif extension==".aac":
-                contentType="audio/aac"
-            elif extension==".avi":
-                contentType="audio/aac"
-            elif extension == ".css":
-                contentType="text/css"
-            elif extension==".csv":
-                contentType="text/csv"
-            elif extension==".html":
-                contentType="text/html"
-            elif extension==".js":
-                contentType="text/javascript"
-            elif extension==".txt":
-                contentType="text/plain"
-            elif extension==".xml":
-                contentType="text/xml"
-            elif extension==".mpeg":
-                contentType="video/mpeg"
-            elif extension==".mp4":
-                contentType="video/mp4"
-            elif extension==".mov":
-                contentType="video/quicktime"    
-            elif extension==".flv":
-                contentType="video/x-flv"
-                
-            else: print("error unknown type")
-            print(name,"----", extension,"-----", contentType)
-            s3.Bucket('ezdeploy').upload_file(os.path.join(root, name),
-              os.path.join(root, name),  ExtraArgs={"ContentType": contentType,})
-          
+            contentType=False
+            try: 
+                file_is_valid(extension)
+                contentType=mimetypes.types_map.get(extension.lower())      
+            except: 
+                print(name, "is invalid file type")
 
+            if extension and contentType:
+                print(f' \n uploadging :  {name}  |  {extension} --{contentType} \n')
+                try: 
+                    s3.Bucket('ezdeploy').upload_file(os.path.join(root, name),
+                    os.path.join(root, name),  ExtraArgs={"ContentType": contentType,})
+                    print(f"{'-'*10} {name} uploaded {'-'*10}")
+                except BaseException as e: print(f"error when uploading {name}: \n {str(e)}")
     return os.path.abspath(__file__)
