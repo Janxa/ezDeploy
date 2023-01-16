@@ -14,7 +14,7 @@ def file_is_valid(ext):
             ".avi",
             ".css",
             ".csv",
-            ".htm",
+            ".html",
             ".js",
             ".txt",
             ".xml",
@@ -23,7 +23,6 @@ def file_is_valid(ext):
             ".mov",
             ".flv"
         ]
-
         if ext in valid_extensions:
             return True
 
