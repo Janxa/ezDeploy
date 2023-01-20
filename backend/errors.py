@@ -1,0 +1,48 @@
+
+class UnsupportedExtensionError(Exception):
+    def __init__(self,filename,extension ):
+        self.filename = filename
+        self.extension = extension
+        self.message = f'Error: {filename} is not a supported file type ({extension})'
+    def __str__(self):
+        return self.message
+
+
+class UnsupportedNameError(Exception):
+    def __init__(self,filename ):
+        self.filename = filename
+        self.message = f'Error: {filename} is not a valid file name'
+    def __str__(self):
+        return self.message
+
+
+class ErrorList(Exception):
+    def __init__(self,errors):
+         self.errors=errors
+    def get_list(self):
+        return self.errors
+    def __iter__(self):
+        self.index = 0
+        return self
+    def __next__(self):
+        if self.index >= len(self.errors):
+            raise StopIteration()
+        error = self.errors[self.index]
+        self.index += 1
+        return error
+    def __str__(self):
+        message="Program encountered multiple rrors:"
+        for error in self.error:
+            message.append('\n',error)
+        return message
+
+
+class FileTooLargeError(Exception):
+    def __init__(self,max_size, filename=None,folder=False):
+        self.filename=filename
+        self.max_size=max_size
+        if folder == False:
+           self.message = f'Error: {filename} is too large ( max size : {max_size})'
+        else:self.message = f'Error: folder is is too large ( {max_size} excessed, try to compress your images to free some space )'
+    def __str__(self):
+        return self.message
