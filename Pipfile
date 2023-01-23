@@ -8,6 +8,7 @@ flask = "*"
 boto3 = "*"
 python-dotenv = "*"
 werkzeug = "*"
+flask-jwt-extended = "*"
 
 [dev-packages]
 
