@@ -1,27 +1,28 @@
-from flask import Blueprint,request,make_response,jsonify
-from pathlib import Path
-from backend.services import file_is_valid
-import mimetypes
-import os
+from flask import Blueprint,request,make_response
+from ..settings import aws_config
 from backend.extensions import s3
-from backend.utils.validations import validate_all_files
+from backend.utils.validations import validate_all_files,create_error_json
 import io
-from werkzeug.utils import secure_filename
-from backend.errors import UnsupportedExtensionError,ErrorList
+from backend.errors import ErrorList
 upload=Blueprint('upload',__name__, url_prefix="/upload")
 
 @upload.route("/",methods=['POST'])
 def uploading():
-        files=request.files
+        bucket_name=aws_config.bucket_name
 
+        files=request.files
+        index = None
         try: validate_all_files(files)
         except ErrorList as errors:
-                errorlist=errors.get_list()
+                error_json=create_error_json(errors.get_list())
+                return make_response(error_json,400)
+        for file in files.getlist("files"):
+                print('\n',file.filename.rsplit("/")[-1])
+                if file.filename.rsplit("/")[-1] == "index.html":
+                        print('index found')
+                        index=f"https://{bucket_name}.s3.amazonaws.com/{file.filename}"
+                file_bytes = file.read()
+                file_like_object = io.BytesIO(file_bytes)
+                s3.Bucket(bucket_name).upload_fileobj(file_like_object, file.filename, ExtraArgs={'ContentType': file.content_type})
+        return make_response(index,200)
 
-        # for file in files.getlist("files"):
-
-        #  print(file)
-        #  file_bytes = file.read()
-        #  file_like_object = io.BytesIO(file_bytes)
-        #  s3.Bucket('ezdeploy').upload_fileobj(file_like_object, file.filename, ExtraArgs={'ContentType': file.content_type})
-        return os.path.abspath(__file__)
