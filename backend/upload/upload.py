@@ -1,6 +1,6 @@
 from flask import Blueprint,request,make_response
 from ..settings import aws_config
-from backend.extensions import s3
+from backend.extensions.aws_s3 import s3
 from backend.utils.validations import validate_all_files,create_error_json
 import io
 from backend.errors import ErrorList
