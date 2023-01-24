@@ -9,7 +9,7 @@ boto3 = "*"
 python-dotenv = "*"
 werkzeug = "*"
 flask-jwt-extended = "*"
-flask-mysql = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 
