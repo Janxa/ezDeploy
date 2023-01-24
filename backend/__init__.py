@@ -1,10 +1,11 @@
 from flask import Flask
-from backend.upload.upload import upload
-from .extensions import s3
+from backend.upload import upload
+from backend.extensions import s3
+from backend.authentification import authentification
 def create_app():
     app = Flask(__name__)
     app.register_blueprint(upload)
-
+    app.register_blueprint(authentification)
     if app.debug:
         @app.route("/")
         def hello_world():
@@ -24,4 +25,3 @@ def create_app():
 
 
     return app
-
