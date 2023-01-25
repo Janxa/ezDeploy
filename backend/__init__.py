@@ -1,9 +1,14 @@
-from flask import Flask
+from flask import Flask,g
 from backend.upload import upload
 from backend.extensions import s3
 from backend.authentification import authentification
+from flask_sqlalchemy import SQLAlchemy
+
 def create_app():
     app = Flask(__name__)
+    db = SQLAlchemy()
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqlconnector://maxime:booster54310@localhost:3306/ezdeploy_db"
+    db.init_app(app)
     app.register_blueprint(upload)
     app.register_blueprint(authentification)
     if app.debug:
@@ -23,5 +28,11 @@ def create_app():
                             </body>
                             </html>""")
 
+    # @app.before_request
+    # def before_request():
+    #     g.connection=app.db.connect()
+    # @app.teardown_request
+    # def teardown_request(exception):
+    #     app.db.close(g.connection)
 
     return app

@@ -10,6 +10,8 @@ python-dotenv = "*"
 werkzeug = "*"
 flask-jwt-extended = "*"
 verify-email = "*"
+flask-sqlalchemy = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 
