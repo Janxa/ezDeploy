@@ -8,11 +8,16 @@ class aws_config():
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
     bucket_name=os.getenv('BUCKET_NAME')
 
-class sqlAlchemy_config():
-    SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI')
 
 class mySql_config():
     host=os.getenv('MYSQL_HOST')
     user=os.getenv('MYSQL_USERNAME')
     password=os.getenv('MYSQL_PASSWORD')
     db_name=os.getenv('MYSQL_DB_NAME')
+
+
+class sqlAlchemy_config():
+    SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI')
+
+class JWT_Config():
+    JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY')
