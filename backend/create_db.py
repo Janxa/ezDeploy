@@ -13,3 +13,4 @@ def create_db():
     except Exception as e:
         if e.errno==1007:
             print('database already created')
+        else:print(e)
