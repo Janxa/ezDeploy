@@ -12,9 +12,10 @@ def login(email, password):
     user= FindUser(email)
     hash=user.password
     ph.verify(hash, password)
-
+    return user
     # if ph.check_needs_rehash(hash):
     #      db.set_password_hash_for_user(user, ph.hash(password))
+
 def GetUserPassword(user):
     user=FindUser(user)
 
