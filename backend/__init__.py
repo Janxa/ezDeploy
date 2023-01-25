@@ -1,8 +1,9 @@
-from flask import Flask,g
+from flask import Flask
 from backend.upload import upload
 from backend.extensions import s3
 from backend.authentification import authentification
-from .settings import sqlAlchemy_config
+from flask_jwt_extended import JWTManager
+from .settings import sqlAlchemy_config,JWT_Config
 from .create_db import create_db
 from .models import db
 
@@ -10,7 +11,9 @@ from .models import db
 def create_app():
     app = Flask(__name__)
     create_db()
-    app.config["SQLALCHEMY_DATABASE_URI"] = sqlAlchemy_config.SQLALCHEMY_DATABASE_URI
+    jwt = JWTManager(app)
+    app.config.from_object(JWT_Config)
+    app.config.from_object(sqlAlchemy_config)
     db.init_app(app)
     with app.app_context():
      db.create_all()
