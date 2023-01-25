@@ -12,6 +12,7 @@ flask-jwt-extended = "*"
 verify-email = "*"
 flask-sqlalchemy = "*"
 mysql-connector-python = "*"
+argon2-cffi = "*"
 
 [dev-packages]
 
