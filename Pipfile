@@ -13,6 +13,7 @@ verify-email = "*"
 flask-sqlalchemy = "*"
 mysql-connector-python = "*"
 argon2-cffi = "*"
+flask-mail = "*"
 
 [dev-packages]
 
