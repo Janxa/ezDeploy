@@ -21,3 +21,9 @@ class sqlAlchemy_config():
 
 class JWT_Config():
     JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY')
+
+class FLask_Mail_Config():
+    SMTP_SERVER=os.getenv('SMTP_SERVER')
+    PORT=os.getenv('PORT')
+    SMTP_ID=os.getenv('SMTP_ID')
+    SMTP_PASSWORD=os.getenv('SMTP_PASSWORD')
