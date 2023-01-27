@@ -1,20 +1,23 @@
 from flask import Flask
 from backend.upload import upload
-from backend.extensions import s3
+from backend.extensions import s3,mail
 from backend.authentification import authentification
 from flask_jwt_extended import JWTManager
-from .settings import sqlAlchemy_config,JWT_Config
+from .settings import sqlAlchemy_config,JWT_Config,FLask_Mail_Config
 from .create_db import create_db
 from .models import db
 
 
 def create_app():
     app = Flask(__name__)
+
     create_db()
     jwt = JWTManager(app)
     app.config.from_object(JWT_Config)
     app.config.from_object(sqlAlchemy_config)
+    app.config.from_object(FLask_Mail_Config)
     db.init_app(app)
+    mail.init_app(app)
     with app.app_context():
      db.create_all()
 
