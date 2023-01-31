@@ -1,6 +1,6 @@
 from ..errors import UnsupportedExtensionError,ErrorList,FileTooLargeError,UnsupportedNameError
 import os
-from.. variables import valid_extensions, invalid_names
+from.variables import valid_extensions, invalid_names
 from flask import jsonify
 from werkzeug.datastructures import ImmutableMultiDict,FileStorage
 
