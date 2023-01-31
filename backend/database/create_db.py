@@ -1,4 +1,4 @@
-from .settings import mySql_config
+from ..settings import mySql_config
 import mysql.connector
 
 def create_db():

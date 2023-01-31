@@ -4,7 +4,7 @@ from backend.extensions import s3,mail
 from backend.authentification import authentification
 from flask_jwt_extended import JWTManager
 from .settings import sqlAlchemy_config,JWT_Config,FLask_Mail_Config
-from .create_db import create_db
+from .database.create_db import create_db
 from .models import db
 
 
