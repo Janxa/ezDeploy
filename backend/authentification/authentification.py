@@ -1,6 +1,6 @@
 from flask import Blueprint,request,make_response,jsonify
 from operator import itemgetter
-from .services import hash_password, CreateUser,login,FindUser
+from .services import hash_password, CreateUser,login,FindUser,send__confirmation_email
 from flask_jwt_extended import create_access_token
 authentification=Blueprint('authentification',__name__, url_prefix="/authentification")
 
@@ -12,6 +12,7 @@ def register_user():
         return make_response(jsonify({"error":"Email already used"},409))
     hashed_password= hash_password(password)
     CreateUser(username,email,hashed_password)
+    send__confirmation_email(username,email)
     return make_response(jsonify({'Success':'User successfully registered'}),200)
 
 @authentification.route("/login",methods=['POST'])
