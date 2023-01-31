@@ -40,7 +40,7 @@ class ErrorList(Exception):
         message="Program encountered multiple erors:"
         for error in self.errors:
             message += '\n'
-            message+= str(error)
+            message += str(error)
         return message
 
 
