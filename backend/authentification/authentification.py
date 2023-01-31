@@ -1,19 +1,40 @@
-from flask import Blueprint,request,make_response,jsonify
+from flask import (Blueprint,
+                   request,
+                   make_response,
+                   jsonify)
 from operator import itemgetter
-from .services import hash_password, CreateUser,login,FindUser,send__confirmation_email
-from flask_jwt_extended import create_access_token
+from backend.database.database import FindUser,ValidateToken
+from .services import (hash_password,
+                       CreateUser,
+                       register_user,
+                       login,
+                       FindUser,
+                       send__confirmation_email)
+from flask_jwt_extended import (create_access_token,
+                                jwt_required)
+
+
 authentification=Blueprint('authentification',__name__, url_prefix="/authentification")
 
 @authentification.route("/register",methods=['POST'])
-def register_user():
+def register():
     username,email,password=itemgetter('username','email','password')(request.get_json())
-    user = FindUser(email)
-    if user:
-        return make_response(jsonify({"error":"Email already used"},409))
-    hashed_password= hash_password(password)
-    CreateUser(username,email,hashed_password)
-    send__confirmation_email(username,email)
+    try:
+        register_user(username,email,password)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'Error':str(e)}),200)
     return make_response(jsonify({'Success':'User successfully registered'}),200)
+
+
+@authentification.route("/verify/<token>",methods=["POST"])
+def verify_user(token):
+    try:
+        ValidateToken(token)
+    except Exception as e:
+        print(e)
+        return make_response(jsonify({'Error':"invalid token"}),401)
+    return make_response(jsonify({"Success": "Email successfully valiated"}),200)
 
 @authentification.route("/login",methods=['POST'])
 def login_user():
