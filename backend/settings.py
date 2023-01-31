@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class aws_config():
     aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -23,7 +24,8 @@ class JWT_Config():
     JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY')
 
 class FLask_Mail_Config():
-    SMTP_SERVER=os.getenv('SMTP_SERVER')
-    PORT=os.getenv('PORT')
-    SMTP_ID=os.getenv('SMTP_ID')
-    SMTP_PASSWORD=os.getenv('SMTP_PASSWORD')
+    MAIL_SERVER=os.getenv('SMTP_SERVER')
+    MAIL_PORT=os.getenv('PORT')
+    MAIL_USERNAME=os.getenv('SMTP_ID')
+    MAIL_DEFAULT_SENDER=os.getenv("MAIL_DEFAULT_SENDER")
+    MAIL_PASSWORD=os.getenv('SMTP_PASSWORD')
