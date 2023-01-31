@@ -8,4 +8,4 @@ class User(db.Model):
     username = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255),unique=True, nullable=False)
     password=db.Column(db.String(255), nullable=False)
-
+    validated =db.Column(db.Boolean,unique=False,nullable=False,default=False)
