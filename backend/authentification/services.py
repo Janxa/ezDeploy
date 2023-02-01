@@ -12,7 +12,6 @@ def register_user(username,email,password,):
     hashed_password = hash_password(password)
     user=CreateUser(username,email,hashed_password)
     token = GenerateVerificationToken(user)
-    print("token",token)
     send__confirmation_email(username,email,token)
 
 
