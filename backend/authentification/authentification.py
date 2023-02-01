@@ -3,13 +3,8 @@ from flask import (Blueprint,
                    make_response,
                    jsonify)
 from operator import itemgetter
-from backend.database.database import FindUser,ValidateToken
-from .services import (hash_password,
-                       CreateUser,
-                       register_user,
-                       login,
-                       FindUser,
-                       send__confirmation_email)
+from backend.database.database import ValidateToken
+from .services import register_user,login
 from flask_jwt_extended import (create_access_token,
                                 jwt_required)
 
