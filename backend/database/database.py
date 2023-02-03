@@ -2,7 +2,6 @@ from ..models import db,User,VerificationToken
 import secrets
 import hashlib
 from datetime import datetime,timedelta
-
 def FindUser(email):
     user = User.query.filter_by(email=email).first()
     return user
@@ -10,8 +9,10 @@ def ValidateToken(token):
     try:
         token = VerificationToken.query.filter_by(token=token).first()
         user=token.user
-        user.validated=True
-        db.session.commit()
+        if user.validated == False:
+            user.validated=True
+            db.session.commit()
+        else: return False
     except Exception as e:
         raise e
     return user
