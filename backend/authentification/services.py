@@ -1,6 +1,7 @@
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher,exceptions
 from flask_mail  import Message
 from backend import mail
+from backend.authentification.errors import UserNotFoundError,VerificationError
 from backend.database.database import FindUser,CreateUser,GenerateVerificationToken
 from flask import current_app
 ph = PasswordHasher()
@@ -23,10 +24,16 @@ def hash_password(password):
     return hash
 
 def login(email, password):
-    user= FindUser(email)
-    hash=user.password
-    ph.verify(hash, password)
+    user = FindUser(email)
+    if user is None:
+        raise UserNotFoundError("User not found")
 
+    hash = user.password
+    try:
+        ph.verify(hash, password)
+    except exceptions.VerifyMismatchError as e:
+        print(type(e))
+        raise VerificationError("Incorrect password")
     return user
     # if ph.check_needs_rehash(hash):
     #      db.set_password_hash_for_user(user, ph.hash(password))
