@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy as sa
+import uuid
 
 db = SQLAlchemy()
 
@@ -7,6 +8,7 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+    uuid=db.Column(db.CHAR(36),nullable=False,default=str(uuid.uuid4()))
     username = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255),unique=True, nullable=False)
     password=db.Column(db.String(255), nullable=False)
