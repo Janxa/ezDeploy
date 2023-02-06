@@ -1,17 +1,21 @@
-from flask import Blueprint,request,make_response
-from flask_jwt_extended import jwt_required
+from flask import Blueprint,request,make_response,jsonify
+from flask_jwt_extended import jwt_required,get_jwt_identity
 from ..settings import aws_config
 from backend.extensions.aws_s3 import s3
 from .services import validate_all_files,create_error_json
 import io
+from operator import itemgetter
+
 from backend.errors import ErrorList
 upload=Blueprint('upload',__name__, url_prefix="/upload")
 
 @upload.route("/",methods=['POST'])
 @jwt_required()
 def uploading():
+        user_id = get_jwt_identity()
         bucket_name=aws_config.bucket_name
-
+        name = request.form["website_name"]
+        print(user_id,name)
         files=request.files
         index = None
         try: validate_all_files(files)
