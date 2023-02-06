@@ -2,6 +2,11 @@ from ..models import db,User,VerificationToken
 import secrets
 import hashlib
 from datetime import datetime,timedelta
+import os
+import base64
+
+
+
 def FindUser(email):
     user = User.query.filter_by(email=email).first()
     return user
@@ -19,8 +24,13 @@ def ValidateToken(token):
 
 
 def CreateUser(username,email,password):
+    while True:
+        user_id=generate_id()
+        user= User.query.filter_by(id=user_id).first()
+        if not user:
+            break
     try:
-        user=User(username=username,email=email,password=password)
+        user=User(username=username,email=email,password=password,id=user_id)
         db.session.add(user)
         db.session.commit()
 
@@ -28,6 +38,11 @@ def CreateUser(username,email,password):
         raise e
 
     return user
+
+def generate_id():
+    random_bytes = os.urandom(6)
+    return base64.urlsafe_b64encode(random_bytes).rstrip(b'=').decode('utf-8')
+
 
 def GenerateVerificationToken(user):
     if not user:
