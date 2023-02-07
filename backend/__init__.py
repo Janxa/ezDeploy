@@ -1,5 +1,5 @@
 from flask import Flask
-from backend.upload import upload
+from backend.websites import websites
 from backend.extensions import s3,mail
 from backend.authentification import authentification
 from flask_jwt_extended import JWTManager
@@ -21,7 +21,7 @@ def create_app():
     with app.app_context():
      db.create_all()
 
-    app.register_blueprint(upload)
+    app.register_blueprint(websites)
     app.register_blueprint(authentification)
 
 
