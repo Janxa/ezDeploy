@@ -46,6 +46,7 @@ def deleting():
                 print("file_found")
                 file_found=True
                 break
+
         if not file_found:
                 return make_response(jsonify({"error":"website does not exist"}),404)
         for file in bucket.objects.filter(Prefix=to_delete):
