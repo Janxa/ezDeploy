@@ -54,5 +54,31 @@ def deleting():
              file.delete()
         return make_response(website_name,200)
 
+@websites.route("/show",methods=['POST'])
+@jwt_required()
+
+def show():
+        user_id = get_jwt_identity()
+        bucket =  s3.Bucket(aws_config.bucket_name)
+        websites = {}
+        file_found=False
+        for _ in  bucket.objects.filter(Prefix=user_id):
+                print("file_found")
+                file_found=True
+                break
+        if not file_found:
+                return make_response(jsonify({"error":"No websites found"}),404)
+        for file in bucket.objects.filter(Prefix=user_id):
+                id,website_name,file_name=file.key.split('/',3)
+                if not website_name in websites:
+                        websites[website_name]=[]
+                        websites[website_name].append(file_name)
+                else : websites[website_name].append(file_name)
+                print(id,website_name,file_name)
+        return make_response(jsonify(websites),200)
+
+
+
+
 
 
