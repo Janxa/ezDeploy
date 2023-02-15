@@ -18,8 +18,12 @@ module.exports = {
       'lightblue':'#81C3D7',
 
       'color-bg-dark': '#353535',
+      'color-bg-dark-2':'#292929',
       'color-yellow-primary':'#F9CB40',
-      'color-blue-primary':'#2F52E0'
+      'color-blue-primary':'#5688C7',
+      'color-blue-secondary':'#465F7E',
+      'color-green-primary':'#499F68',
+      'color-red-primary':'#DA2C38'
     }},
   },
   plugins: [],
