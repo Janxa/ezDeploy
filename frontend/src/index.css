@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .input{
+    @apply
+    p-1
+    mb-1
+    rounded-sm
+    lg:my-2
+    focus:outline-color-blue-primary
+    focus:outline
+    focus:outline-2
+    text-color-bg-dark
+  }
+  .input-invalid{
+    @apply
+    outline
+    outline-2
+    outline-color-red-primary
+    p-1
+    mb-1
+    rounded-sm
+    focus:outline-none
+
+    text-color-bg-dark }
+
+  }
