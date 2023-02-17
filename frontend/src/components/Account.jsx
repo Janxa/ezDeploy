@@ -23,16 +23,8 @@ function Account() {
     <main className="mx-auto mt-48 md:mt-32 w-11/12 flex">
         <div className="bg-color-bg-dark w-3/4 md:w-1/2 lg:w-1/3 m-auto p-5 shadow-md rounded-md  flex flex-col">
 
-            {disp === 'login'
-            ?
-                <Login formSwitch={formSwitch}/>
-
-            : false}
-            {disp === 'register'
-            ?
-                <Register formSwitch={formSwitch} />
-
-            : false}
+            {disp === 'login'?<Login formSwitch={formSwitch}/>: false}
+            {disp === 'register'? <Register formSwitch={formSwitch} />: false}
 
         </div>
     </main>
