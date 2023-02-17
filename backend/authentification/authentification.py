@@ -10,7 +10,7 @@ from flask_jwt_extended import (create_access_token,
                                 jwt_required)
 
 
-authentification=Blueprint('authentification',__name__, url_prefix="/authentification")
+authentification=Blueprint('authentification',__name__, url_prefix="/api/authentification")
 
 @authentification.route("/register",methods=['POST'])
 def register():
@@ -18,8 +18,8 @@ def register():
     try:
         register_user(username,email,password)
     except Exception as e:
-        print(e)
-        return make_response(jsonify({'Error':str(e)}),200)
+        error = e.args[0]
+        return make_response(jsonify({"error":error["message"]}),error["code"])
     return make_response(jsonify({'Success':'User successfully registered'}),200)
 
 
