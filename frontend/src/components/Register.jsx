@@ -21,7 +21,7 @@ function Register(props) {
         event.preventDefault();
         let errors = {};
         try {
-            await schema.validateAsync({username: data["username"], email: data["email"], password: data["password"]});
+            await schema.validateAsync({username: data["username"], email: data["email"], password: data["password"]},{abortEarly: false});
         } catch (err) {
             console.log("Validation error:", err);
             err.details.forEach((error) => (console.log(error), errors[error.context.label] = error.message));
