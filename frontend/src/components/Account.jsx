@@ -11,36 +11,27 @@ function Account() {
     let { state } = useLocation();
     const [disp,setDisp]= useState(state?.disp || 'login' )
 
-
     useEffect(() => {
         setDisp(state?.disp || 'login' );
     }, [state]);
 
-    const stateSwitch =(new_state) => {
+    const formSwitch =(new_state) => {
         setDisp(new_state);
     };
 
     return (
-    <main className="  mx-auto mt-48 w-11/12 flex">
-        <div className=" bg-color-bg-dark w-3/4 m-auto p-5 shadow-md rounded-md  flex flex-col">
+    <main className="mx-auto mt-48 md:mt-32 w-11/12 flex">
+        <div className="bg-color-bg-dark w-3/4 md:w-1/2 lg:w-1/3 m-auto p-5 shadow-md rounded-md  flex flex-col">
 
             {disp === 'login'
-            ?   <>
-                <Login />
-                <p
-                className="text-sm font-light self-center mt-2 " >No account yet ?</p>
-                <button className=" font-medium  text-color-blue-primary underline  decoration-dashed  " onClick={ ()=> stateSwitch("register")}>Sign up </button>
-                </>
+            ?
+                <Login formSwitch={formSwitch}/>
+
             : false}
             {disp === 'register'
-            ?   <>
-                <Register />
-                <p  className="text-sm font-light self-center mt-2 ">Already got an account ?
-                </p>
-                    <button className=" font-medium  text-color-blue-primary underline  decoration-dashed  "  onClick={ ()=> stateSwitch("login")}>
-                        Sign in
-                    </button>
-                </>
+            ?
+                <Register formSwitch={formSwitch} />
+
             : false}
 
         </div>
