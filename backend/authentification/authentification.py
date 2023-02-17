@@ -29,10 +29,10 @@ def verify_user(token):
         user = ValidateToken(token)
     except Exception as e:
         print(e)
-        return make_response(jsonify({'Error':"invalid token"}),401)
+        return make_response(jsonify({'Error':"The verification code is incorrect."}),401)
     if user == False:
-        return make_response(jsonify({"Error":"Email already validated"}))
-    return make_response(jsonify({"Success": "Email successfully valiated"}),200)
+        return make_response(jsonify({"Success":"Email has already been validated"}),200)
+    return make_response(jsonify({"Success": "Email successfully validated"}),200)
 
 @authentification.route("/login",methods=['POST'])
 def login_user():
