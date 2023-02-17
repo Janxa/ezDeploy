@@ -4,12 +4,17 @@ from backend import mail
 from backend.authentification.errors import UserNotFoundError,VerificationError
 from backend.database.database import FindUser,CreateUser,GenerateVerificationToken
 from flask import current_app
+import re
 ph = PasswordHasher()
 
 def register_user(username,email,password,):
     user = FindUser(email)
     if user:
-         raise (Exception({"error":"Email already used"},409))
+        raise Exception({"message": "Email already used", "code": 409})
+    pattern = re.compile("^[ a-zA-Z0-9!@#$%^&*()_+\-=\[\\]'\"{};:,.<>\/?]+$")
+    if not pattern.match(password):
+        raise Exception({"message": "Password contains forbidden characters", "code": 400})
+
     hashed_password = hash_password(password)
     user=CreateUser(username,email,hashed_password)
     token = GenerateVerificationToken(user)
