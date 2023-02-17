@@ -15,4 +15,3 @@ import Joi from 'joi';
   });
 
   export {loginSchema};
-  //^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};:'",.<>\/?]*$
