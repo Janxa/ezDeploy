@@ -12,7 +12,8 @@ def FindUser(email):
     return user
 def ValidateToken(token):
     try:
-        token = VerificationToken.query.filter_by(token=token).first()
+        hashed_token = hashlib.sha256(token.encode()).hexdigest()
+        token = VerificationToken.query.filter_by(token=hashed_token).first()
         user=token.user
         if user.validated == False:
             user.validated=True
@@ -54,4 +55,4 @@ def GenerateVerificationToken(user):
     db.session.add(verification_token)
     db.session.commit()
     print("hashed token",hashed_token)
-    return hashed_token
+    return token
