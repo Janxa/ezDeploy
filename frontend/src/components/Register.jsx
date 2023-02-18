@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { registerSchema } from "../joi_schemas/register_schema";
+import VerifyAccount from "./VerifyAccount";
 import axios from "axios";
 function Register(props) {
     const [data,setData] = useState( { username:"", email: "", password: "" });
     const [errors,setErrors]=useState({});
     const [emailsent,setEmailsent]=useState(false);
+    const [emailresent,setEmailResent]=useState(false)
     const schema=registerSchema;
 
     const handleChange = ({currentTarget:input}) => {
@@ -46,6 +48,22 @@ function Register(props) {
             console.log(errors)
         }
     };
+    const resendEmail= async () =>{
+        try {
+            const res = await axios.post("/api/authentification/resend", {email: data["email"]});
+            setEmailResent(true)
+        } catch (error) {
+            console.log("Login error:", error);
+            if (error.response.status==500) {
+                errors["request"] = "Server Error. Check your connexion or try again later";
+
+            } else if (error.request) {
+                errors["request"] = error.response.data.error;
+            } else {
+                errors["request"] = error.request.statusText;
+            }
+    }
+};
     return (
     <div className=" flex flex-col">
         { !emailsent
@@ -70,11 +88,7 @@ function Register(props) {
                     </button>
             </form>
 
-        :   <div className="flex flex-col items-center">
-                <h3 className="font-medium text-2xl text-color-yellow-primary mb-4">Check your mailbox !</h3>
-                <p className="mb-2">To verify your account, you need to click on the link  we sent to <b>{data["email"]}</b>.</p>
-                <p className="underline underline-offset-2">Dont forget to check your spams.</p>
-            </div>
+        : <VerifyAccount resendEmail={resendEmail} email={data.email} />
         }
     </div>
     );
