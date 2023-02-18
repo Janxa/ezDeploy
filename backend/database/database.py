@@ -10,6 +10,20 @@ import base64
 def FindUser(email):
     user = User.query.filter_by(email=email).first()
     return user
+
+def UserHasToken(user):
+    token = VerificationToken.query.filter_by(user=user).first()
+    print(token)
+    return token
+
+def DeleteToken(token):
+    try:
+        print('deleting',token)
+        db.session.delete(token)
+        db.session.commit()
+    except Exception as e:
+        raise e
+
 def ValidateToken(token):
     try:
         hashed_token = hashlib.sha256(token.encode()).hexdigest()
@@ -48,6 +62,10 @@ def generate_id():
 def GenerateVerificationToken(user):
     if not user:
         return None
+    token=UserHasToken(user)
+    if token !=None:
+        DeleteToken(token)
+
     token = secrets.token_hex(16)
     hashed_token = hashlib.sha256(token.encode()).hexdigest()
     expiration_date = datetime.now() + timedelta(hours=24)
