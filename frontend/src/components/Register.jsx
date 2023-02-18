@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { registerSchema } from "../joi_schemas/register_schema";
-import VerifyAccount from "./VerifyAccount";
+import EmailVerificationMessage from "./EmailVerificationMessage";
 import axios from "axios";
 function Register(props) {
     const [data,setData] = useState( { username:"", email: "", password: "" });
@@ -88,7 +88,7 @@ function Register(props) {
                     </button>
             </form>
 
-        : <VerifyAccount resendEmail={resendEmail} email={data.email} />
+        : <EmailVerificationMessage resendEmail={resendEmail} email={data.email} />
         }
     </div>
     );

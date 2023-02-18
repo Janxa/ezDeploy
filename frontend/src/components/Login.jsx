@@ -3,7 +3,7 @@ import { loginSchema } from "../joi_schemas/login_schema";
 import {Link } from 'react-router-dom';
 import ErrorMessage from "./ErrorMessage";
 import axios from "axios";
-import VerifyAccount from "./VerifyAccount";
+import EmailVerificationMessage from "./EmailVerificationMessage";
 function Login(props) {
 
     const [data,setData] = useState( { email: "", password: "" });
@@ -35,6 +35,7 @@ function Login(props) {
         try {
             const res = await axios.post("/api/authentification/login", data);
             console.log("Login success:", res);
+
         } catch (error) {
             console.log("Login error:", error);
             if (error.response.status==500) {
@@ -97,7 +98,7 @@ function Login(props) {
             </form>
 
             :
-            <VerifyAccount resendEmail={resendEmail} email={data.email} />
+            <EmailVerificationMessage resendEmail={resendEmail} email={data.email} />
         }
     </div>
     );

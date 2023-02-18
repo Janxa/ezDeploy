@@ -1,4 +1,4 @@
-import {redirect, useParams,Link } from 'react-router-dom';
+import { useParams,Link } from 'react-router-dom';
 import { useState } from 'react';
 import { verifyEmailSchema } from '../joi_schemas/verifyEmail_schema';
 import axios from 'axios';
@@ -42,7 +42,7 @@ function VerifyEmail() {
         <button type="submit" className="button">Validate</button>
         </form>
         :
-        <div>
+        <div className="bg-color-bg-dark w-3/4 md:w-1/2 lg:w-1/3 m-auto p-5 shadow-md rounded-md flex flex-col ">
         <h2 className="font-bold text-2xl text-color-yellow-primary  self-center mb-2">Success</h2>
         <p>{verified}</p>
         <p>You can now <Link  className=" font-medium  text-color-blue-primary underline  decoration-dashed  " to="/account" state={{disp:'login'}}>Login</Link></p>
