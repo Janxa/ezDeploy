@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-  const verifyEmailSchema = Joi.object({
+  const EmailVerificationSchema = Joi.object({
     code: Joi.string()
           .hex()
           .length(32)
@@ -11,4 +11,4 @@ import Joi from 'joi';
 
   });
 
-  export {verifyEmailSchema};
+  export {EmailVerificationSchema};
