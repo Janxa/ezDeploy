@@ -8,6 +8,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import ErrorPage from './components/Error';
+import VerifyEmail from './components/VerifyEmail'
 
 
 const router = createBrowserRouter([
@@ -19,6 +20,16 @@ const router = createBrowserRouter([
       {
         path: "account",
         element: <Account />,
+      },
+      {
+        path: "verify",
+        element: <VerifyEmail />,
+        children:[
+          {
+            path: ':verificationCode',
+            element: <VerifyEmail />,
+          },
+        ]
       },
     ],
   },
