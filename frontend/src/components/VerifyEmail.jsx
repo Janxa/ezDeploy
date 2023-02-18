@@ -1,14 +1,14 @@
 import { useParams,Link } from 'react-router-dom';
 import { useState } from 'react';
-import { verifyEmailSchema } from '../joi_schemas/verifyEmail_schema';
+import { EmailVerificationSchema } from '../joi_schemas/EmailVerification_schema';
 import axios from 'axios';
 
-function VerifyEmail() {
+function EmailVerificationForm() {
     const Code=useParams()
     const [verificationCode,setVerificationCode]=useState(Object.keys(Code).length !== 0 ? Code.verificationCode : "")
     const [errors,setErrors]=useState({})
     const [verified,setVerified]=useState(null)
-    const schema=verifyEmailSchema;
+    const schema=EmailVerificationSchema;
 
     const handleChange = ({currentTarget:input}) => {
         setVerificationCode(input.value);
@@ -52,4 +52,4 @@ function VerifyEmail() {
  );
 }
 
-export default VerifyEmail;
+export default EmailVerificationForm;
