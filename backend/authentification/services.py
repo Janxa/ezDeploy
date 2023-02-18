@@ -17,8 +17,13 @@ def register_user(username,email,password,):
 
     hashed_password = hash_password(password)
     user=CreateUser(username,email,hashed_password)
+    generate_email_validation_token(user)
+
+def generate_email_validation_token(user):
+    if user.validated:
+        raise Exception({"message": "Email already validated", "code": 409})
     token = GenerateVerificationToken(user)
-    send__confirmation_email(username,email,token)
+    send__confirmation_email(user.username,user.email,token)
 
 
 def hash_password(password):
