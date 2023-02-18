@@ -23,7 +23,17 @@
     mb-1
     rounded-sm
     focus:outline-none
-
     text-color-bg-dark }
 
+  .button{
+    @apply
+    my-2
+    py-2
+    bg-color-blue-primary
+    hover:bg-color-blue-secondary
+    font-medium
+    text-sm
+    rounded-md
+    border-t
   }
+}
