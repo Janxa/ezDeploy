@@ -52,7 +52,7 @@ def login_user():
         user=login(email,password)
         print(user)
         if user.validated==False:
-            return make_response(jsonify({"Error":"Not validated"}),401)
+            return make_response(jsonify({"error":"user not validated"}),401)
         access_token = create_access_token(identity=user.id)
     except UserNotFoundError as e :
         return make_response(jsonify({"error":"Wrong Email or Password"}),401)
