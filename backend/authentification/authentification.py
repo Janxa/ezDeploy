@@ -4,8 +4,8 @@ from flask import (Blueprint,
                    jsonify)
 from operator import itemgetter
 from backend.authentification.errors import UserNotFoundError,VerificationError
-from backend.database.database import ValidateToken
-from .services import register_user,login
+from backend.database.database import ValidateToken, FindUser
+from .services import register_user,login,generate_email_validation_token
 from flask_jwt_extended import (create_access_token,
                                 jwt_required)
 
@@ -22,6 +22,17 @@ def register():
         return make_response(jsonify({"error":error["message"]}),error["code"])
     return make_response(jsonify({'Success':'User successfully registered'}),200)
 
+@authentification.route("/resend",methods=['POST'])
+def resend():
+    email=itemgetter('email')(request.get_json())
+    print(email)
+    user=FindUser(email=email)
+    try:
+        generate_email_validation_token(user)
+    except Exception as e:
+        error = e.args[0]
+        return make_response(jsonify({"error":error["message"]}),error["code"])
+    return make_response("New e-mail sent ",200)
 
 @authentification.route("/verify/<token>",methods=["GET"])
 def verify_user(token):
