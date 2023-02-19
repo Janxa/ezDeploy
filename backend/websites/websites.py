@@ -7,7 +7,7 @@ import io
 from operator import itemgetter
 
 from backend.errors import ErrorList
-websites=Blueprint('websites',__name__, url_prefix="/websites")
+websites=Blueprint('websites',__name__, url_prefix="/api/websites")
 
 @websites.route("/upload",methods=['POST'])
 @jwt_required()
@@ -33,7 +33,7 @@ def uploading():
                 s3.Bucket(bucket_name).upload_fileobj(file_like_object, file.filename, ExtraArgs={'ContentType': file.content_type})
         return make_response(index,200)
 
-@websites.route("/delete",methods=['POST'])
+@websites.route("/delete",methods=['DELETE'])
 @jwt_required()
 
 def deleting():
@@ -48,15 +48,14 @@ def deleting():
                 break
 
         if not file_found:
-                return make_response(jsonify({"error":"website does not exist"}),404)
+                return make_response(jsonify("website does not exist"),404)
         for file in bucket.objects.filter(Prefix=to_delete):
              print("\n deleting",file)
              file.delete()
-        return make_response(website_name,200)
+        return make_response(f"{website_name} deleted",200)
 
-@websites.route("/show",methods=['POST'])
+@websites.route("/show",methods=['GET'])
 @jwt_required()
-
 def show():
         user_id = get_jwt_identity()
         bucket =  s3.Bucket(aws_config.bucket_name)
@@ -67,7 +66,7 @@ def show():
                 file_found=True
                 break
         if not file_found:
-                return make_response(jsonify({"error":"No websites found"}),404)
+                return make_response('',204)
         for file in bucket.objects.filter(Prefix=user_id):
                 id,website_name,file_name=file.key.split('/',3)
                 if not website_name in websites:
