@@ -61,6 +61,6 @@ def login_user():
     except Exception as e:
         print("error",e)
         return make_response(jsonify({"error":"Unexpected Error"}),500)
-    response=make_response(jsonify({'Success':"User authentified"}),200)
+    response=make_response(jsonify({'username':user.username}),200)
     response.set_cookie("jwt",value=access_token,httponly=True)
     return response
