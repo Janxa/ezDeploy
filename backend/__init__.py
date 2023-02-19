@@ -2,6 +2,7 @@ from flask import Flask
 from backend.websites import websites
 from backend.extensions import s3,mail
 from backend.authentification import authentification
+from .middleware import check_csrf_token
 from flask_jwt_extended import JWTManager
 from .settings import sqlAlchemy_config,JWT_Config,FLask_Mail_Config
 from .database.create_db import create_db
@@ -16,6 +17,7 @@ def create_app():
     app.config.from_object(JWT_Config)
     app.config.from_object(sqlAlchemy_config)
     app.config.from_object(FLask_Mail_Config)
+    app.before_request(check_csrf_token)
     db.init_app(app)
     mail.init_app(app)
     with app.app_context():
