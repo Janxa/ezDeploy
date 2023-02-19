@@ -3,11 +3,13 @@ from flask import (Blueprint,
                    make_response,
                    jsonify)
 from operator import itemgetter
+import secrets
 from backend.authentification.errors import UserNotFoundError,VerificationError
 from backend.database.database import ValidateToken, FindUser
 from .services import register_user,login,generate_email_validation_token
 from flask_jwt_extended import (create_access_token,
-                                jwt_required)
+                                jwt_required,
+                                set_access_cookies)
 
 
 authentification=Blueprint('authentification',__name__, url_prefix="/api/authentification")
@@ -53,7 +55,9 @@ def login_user():
         print(user)
         if user.validated==False:
             return make_response(jsonify({"error":"user not validated"}),401)
-        access_token = create_access_token(identity=user.id)
+        csrf_token=secrets.token_hex(16)
+        access_token = create_access_token(identity=user.id, additional_claims={'csrf':csrf_token})
+
     except UserNotFoundError as e :
         return make_response(jsonify({"error":"Wrong Email or Password"}),401)
     except VerificationError as e:
@@ -61,6 +65,8 @@ def login_user():
     except Exception as e:
         print("error",e)
         return make_response(jsonify({"error":"Unexpected Error"}),500)
+
     response=make_response(jsonify({'username':user.username}),200)
-    response.set_cookie("jwt",value=access_token,httponly=True)
+    set_access_cookies(response,access_token)
+    response.set_cookie('csrf_access_token', value=csrf_token,httponly=False)
     return response
