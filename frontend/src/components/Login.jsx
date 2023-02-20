@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { loginSchema } from "../joi_schemas/login_schema";
-import {Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import AuthService from "../services/authentification.service";
 import ErrorMessage from "./ErrorMessage";
 import axios from "axios";
 import EmailVerificationMessage from "./EmailVerificationMessage";
@@ -8,8 +9,9 @@ function Login(props) {
 
     const [data,setData] = useState( { email: "", password: "" });
     const [errors,setErrors]=useState({});
-    const schema=loginSchema;
     const [emailSent,setEmailSent]=useState(false);
+    const schema=loginSchema;
+    const navigate=useNavigate();
 
     const handleChange = ({currentTarget:input}) => {
         setData((data) => {
@@ -21,11 +23,13 @@ function Login(props) {
         }
         );
     }
-    const handleSubmit = async (event)=> {
+    const handleLogin = async (event)=> {
         event.preventDefault();
         let errors = {};
         try {
             await schema.validateAsync({email: data["email"], password: data["password"]},{abortEarly: false});
+            // navigate("/profile");
+            // window.location.reload();
         } catch (err) {
             console.log("Validation error:", err);
             err.details.forEach((error) => (console.log(error), errors[error.context.label] = error.message));
@@ -33,9 +37,9 @@ function Login(props) {
             return;
         }
         try {
-            const res = await axios.post("/api/authentification/login", data);
+            const res = await AuthService.login(data["email"],data["password"])
             console.log("Login success:", res);
-
+            navigate('/dashboard')
         } catch (error) {
             console.log("Login error:", error);
             if (error.response.status==500) {
@@ -82,7 +86,7 @@ function Login(props) {
     <div className="flex flex-col">
         {!emailSent
             ?
-            <form onSubmit={handleSubmit} className="flex flex-col">
+            <form onSubmit={handleLogin} className="flex flex-col">
 
                 <h2 className="font-bold text-2xl text-color-yellow-primary  self-center">Sign in</h2>
                 <label htmlFor="email" className="font-medium text-sm py-1">Email:</label>
