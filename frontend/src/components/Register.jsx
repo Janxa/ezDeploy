@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { registerSchema } from "../joi_schemas/register_schema";
+import AuthService from "../services/authentification.service";
 import EmailVerificationMessage from "./EmailVerificationMessage";
 import axios from "axios";
 function Register(props) {
@@ -23,7 +24,7 @@ function Register(props) {
         event.preventDefault();
         let errors = {};
         try {
-            await schema.validateAsync({username: data["username"], email: data["email"], password: data["password"]},{abortEarly: false});
+            await AuthService.register(data.username,data.email,data.password)
         } catch (err) {
             console.log("Validation error:", err);
             err.details.forEach((error) => (console.log(error), errors[error.context.label] = error.message));
