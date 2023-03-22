@@ -3,7 +3,9 @@ import os
 from.variables import valid_extensions, invalid_names
 from flask import jsonify
 from werkzeug.datastructures import ImmutableMultiDict,FileStorage
-
+import io
+import zipfile
+import mimetypes
 def validate_all_files(files):
     errorlist = []
     validation_functions = [validate_filenames,contain_index_html,validate_extensions,validate_size ]
@@ -22,7 +24,7 @@ def validate_all_files(files):
 
 def validate_filenames(files):
         errorlist=[]
-        for file in files.getlist("files"):
+        for file in files:
             if len(file.filename.split()) > 1:
                 errorlist.append(UnsupportedNameError(file.filename,whitespace=True))
             filename=file.filename.rsplit("/")[-1]
@@ -35,8 +37,8 @@ def validate_filenames(files):
 
 def contain_index_html(files):
     contain_html= False
-    print(files.getlist('files'))
-    for file in files.getlist("files"):
+    print(files)
+    for file in files:
         print(file)
         print(file.filename)
         filename=file.filename.rsplit("/")[-1]
@@ -52,13 +54,14 @@ def contain_index_html(files):
 def validate_extensions(files):
 
     errors_list=[]
+    print("\n \n \n \n \n",type(files),"\n \n \n \n")
     if isinstance(files,FileStorage):
         extension=os.path.splitext(files.filename)[1]
         if extension in valid_extensions:
             return True
         else: raise UnsupportedExtensionError(files.filename,extension)
-    elif isinstance(files,ImmutableMultiDict):
-        for file in files.getlist('files'):
+    elif isinstance(files,list):
+        for file in files:
             extension=os.path.splitext(file.filename)[1]
             if extension not in valid_extensions:
                 errors_list.append(UnsupportedExtensionError(file.filename,extension))
@@ -71,7 +74,7 @@ def validate_size(files):
     errorlist=[]
     total_size=0
 
-    for file in files.getlist("files"):
+    for file in files:
         #reading only the 10*1048576 first bytes to avoid wasting time on too large files
         file_bytes = file.read(10*1048576)
         size = len(file_bytes)
@@ -100,3 +103,25 @@ def create_error_json(error_list):
         else: error_dict[type(error).__name__]=[str(error)]
 
     return jsonify(error_dict)
+
+def extract_files_from_zip(zip_file):
+    in_memory_file = io.BytesIO(zip_file.read())
+    with zipfile.ZipFile(in_memory_file, 'r') as zip_file:
+        file_list = []
+        for zip_info in zip_file.infolist():
+            if zip_info.is_dir():
+                continue
+            file_name = zip_info.filename
+            if not file_name:
+                continue
+            file_ext = os.path.splitext(file_name)[1]
+            if not file_ext:
+                continue
+            file_storage = FileStorage(
+                stream=zip_file.open(zip_info),
+                filename=file_name,
+                content_type=mimetypes.guess_type(file_name)[0],
+            )
+            file_list.append(file_storage)
+        return file_list
+

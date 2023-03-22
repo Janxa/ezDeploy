@@ -21,8 +21,9 @@ class sqlAlchemy_config():
     SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI')
 
 class JWT_Config():
-    JWT_TOKEN_LOCATION = ['cookies']
+    JWT_TOKEN_LOCATION = ['cookies','headers']
     JWT_ACCESS_COOKIE_NAME = 'access_token_cookie'
+    JWT_ACCESS_CSRF_COOKIE_NAME='csrf_access_token'
     JWT_SECRET_KEY=os.getenv('JWT_SECRET_KEY')
 
 class FLask_Mail_Config():
