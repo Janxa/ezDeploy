@@ -12,13 +12,7 @@ function Header() {
             <div className="bg-white w-full h-[13%] group-hover:w-4/5 transition-all"></div>
         </button>
         <Menu visible={visible} setVisible={setVisible}/>
-        {/* <ul className="hidden ">
-            <li>placeholder</li>
-            <div className="flex  w-1/3 justify-around">
-              <button className="px-2 mr-2">Login</button>
-              <button className="bg-color-blue-primary rounded-full px-3">Register</button>
-            </div>
-        </ul> */}
+
     </header>
      );
 }
