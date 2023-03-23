@@ -9,7 +9,7 @@ import ErrorPage from "./components/Error";
 import VerifyEmail from "./components/VerifyEmail";
 import Dashboard from "./components/Dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import UploadWebsiteForm from "./components/UploadWebsiteFrom";
+import UploadWebsiteForm from "./components/UploadWebsiteForm";
 
 const router = createBrowserRouter([
 	{
