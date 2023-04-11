@@ -8,9 +8,14 @@ from .settings import sqlAlchemy_config,JWT_Config,FLask_Mail_Config
 from .database.create_db import create_db
 from .models import db
 
+from celery import Celery
+
+celery = Celery(__name__, broker='amqp://localhost')
+
 
 def create_app():
     app = Flask(__name__)
+
 
     create_db()
     jwt = JWTManager(app)
@@ -21,7 +26,7 @@ def create_app():
     db.init_app(app)
     mail.init_app(app)
     with app.app_context():
-     db.create_all()
+        db.create_all()
 
     app.register_blueprint(websites)
     app.register_blueprint(authentification)

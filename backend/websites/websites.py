@@ -1,41 +1,34 @@
 from flask import Blueprint,request,make_response,jsonify
 from flask_jwt_extended import jwt_required,get_jwt_identity
 from ..settings import aws_config
-from backend.extensions.aws_s3 import s3
 from .services import validate_all_files,create_error_json,extract_files_from_zip
-import io
 from operator import itemgetter
-
+from ..tasks.upload import upload_to_s3
+from backend.extensions.aws_s3 import s3
 from backend.errors import ErrorList
+import base64
 websites=Blueprint('websites',__name__, url_prefix="/api/websites")
 
 @websites.route("/upload",methods=['POST'])
 @jwt_required()
 def uploading():
         user_id = get_jwt_identity()
-        bucket_name=aws_config.bucket_name
+
         name= str(request.form["website_name"])
         zipfile = request.files['file']
         print(zipfile, type(zipfile))
         files=extract_files_from_zip(zipfile)
-        index = None
-        print
         try: validate_all_files(files)
         except ErrorList as errors:
                 error_json=create_error_json(errors.get_list())
                 return make_response(error_json,400)
-        for file in files:
-                print(file)
-                file.filename=f"{user_id}/{name}/{file.filename}"
-                print('\n',file.filename.rsplit("/")[-1])
-                if file.filename.rsplit("/")[-1] == "index.html":
-                        print('index found')
-                        index=f"https://{bucket_name}.s3.amazonaws.com/{file.filename}"
-                file_bytes = file.read()
-                file_like_object = io.BytesIO(file_bytes)
-                content_type = file.content_type or "application/octet-stream"
-                s3.Bucket(bucket_name).upload_fileobj(file_like_object, file.filename, ExtraArgs={'ContentType': content_type})
-        return make_response(index,200)
+        decoded_files = []
+        for f in files:
+                  file_content = base64.b64encode(f.read()).decode('utf-8')
+                  filename = f.filename
+                  decoded_files.append({'filename': filename, 'file_content': file_content})
+        task = upload_to_s3.delay(user_id, name, decoded_files)
+        return make_response({"task_id":task.id,"website_name":name},200)
 
 @websites.route("/delete",methods=['DELETE'])
 @jwt_required()
@@ -72,12 +65,18 @@ def show():
         if not file_found:
                 return make_response('',204)
         for file in bucket.objects.filter(Prefix=user_id):
-                id,website_name,file_name=file.key.split('/',3)
+                print(file.key)
+                print(file.key.split('/',1))
+                id,full_file_name,=file.key.split('/',1)
+                print(id,full_file_name)
+                website_name,file_name=full_file_name.split('/',1)
+                print(id,full_file_name, website_name,file_name)
                 if not website_name in websites:
                         websites[website_name]=[]
                         websites[website_name].append(file_name)
                 else : websites[website_name].append(file_name)
                 print(id,website_name,file_name)
+        print(websites)
         return make_response(jsonify(websites),200)
 
 
