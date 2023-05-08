@@ -53,3 +53,6 @@ class FileTooLargeError(Exception):
         else:self.message = f'FileTooLargeError: folder is is too large ( {max_size} excessed, try to compress your images to free some space )'
     def __str__(self):
         return self.message
+
+class WebsiteNotFoundError(Exception):
+        pass
