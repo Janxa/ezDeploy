@@ -1,15 +1,26 @@
 import { useState } from "react";
 import { invalid_names, valid_extensions } from "../variables";
+import { useNavigate } from "react-router-dom";
 import exctractZipFile from "../services/zip.service";
 import WebsiteService from "../services/websites.service";
+import Button from "./Common/Button.jsx";
+import LoadingWheel from "./Common/LoadingWheel";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 function UploadWebsiteForm() {
-	const [files, setFiles] = useState([]);
-
+	const [files, setFiles] = useState(null);
+	const [errors, setErrors] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [uploading, setUploading] = useState(false);
+	const [websiteName, setWebsitename] = useState("");
+	let navigate = useNavigate();
 	const handleFileUpload = async (event) => {
-		console.log(event);
-		console.log(event.target.files);
-
+		setErrors(false);
 		const zipFile = event.target.files[0];
+		console.log(typeof zipFile);
+		console.log(zipFile);
+		setLoading(true);
 		const file_list = await exctractZipFile(zipFile);
 		let numberOfIndex = 0;
 		const fileValidationFunctions = [
@@ -26,6 +37,7 @@ function UploadWebsiteForm() {
 					const validationFunction = fileValidationFunctions[j];
 					validationFunction(file);
 				}
+				//Check if there is one, or more than one index.html
 				numberOfIndex += isIndexHtml(file);
 			}
 
@@ -35,13 +47,33 @@ function UploadWebsiteForm() {
 				throw new Error(`The zipfile must one, and only one index.html file`);
 		} catch (error) {
 			// Handle validation errors
-			console.log("Validation error:", error);
+
+			setErrors(error);
+		} finally {
+			setLoading(false);
 		}
 	};
-
+	const handleChange = (event) => {
+		const newWebsiteName = event.target.value;
+		setWebsitename(newWebsiteName);
+	};
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-		await WebsiteService.uploadWebsite(files);
+		setUploading(true);
+		try {
+			const uploadResponse = await WebsiteService.uploadWebsite(
+				files,
+				websiteName
+			);
+			localStorage.setItem(
+				uploadResponse.data.website_name,
+				uploadResponse.data.task_id
+			);
+			setUploading("done");
+			return navigate("/dashboard");
+		} catch (e) {
+			console.log("this is the error:", e.response);
+		}
 	};
 
 	// File validation functions
@@ -53,7 +85,6 @@ function UploadWebsiteForm() {
 		if (invalid_names.includes(filename)) {
 			throw new Error(`Filename "${file.name}" is not allowed.`);
 		}
-		console.log(file, "is valid filename");
 	};
 
 	const isIndexHtml = (file) => {
@@ -67,26 +98,105 @@ function UploadWebsiteForm() {
 		if (!valid_extensions.includes(extension) && file.contents !== "") {
 			throw new Error(`File extension "${extension}" is not allowed.`);
 		}
-		console.log(extension, "is valid extension");
 	};
 
 	const validateSize = (file) => {
 		if (file.contents.length > 2 * 1024 * 1024) {
 			throw new Error(`File "${file.name}" is too large.`);
 		}
-		console.log(file.contents.length, "is valid size");
 	};
 
 	return (
-		<form enctype="multipart/form-data" onSubmit={handleSubmit}>
-			<label htmlFor="file-upload">Select files to upload:</label>
+		<form
+			className="flex flex-col w-5/6 mx-auto
+			mt-10 shadow-md h-48 p-4 justify-around bg-color-bg-dark rounded-xl"
+			enctype="multipart/form-data"
+			onSubmit={handleSubmit}
+		>
+			<label
+				className="text-xl font-bold text-color-yellow-primary"
+				htmlFor="file-upload"
+			>
+				Select files to upload:
+			</label>
+			<div
+				className="flex flex-row items-center m-auto
+						justify-center
+						w-full
+				 "
+			>
+				<label
+					for="file-upload"
+					class={` bg-color-yellow-primary hover:bg-[#FBD974] text-center cursor-pointer
+					  text-color-bg-dark-2  font-bold w-1/4  py-2 px-3 rounded-full
+					  ${
+							files || loading
+								? "-translate-x-1/3 transition-all ease-in-out duration-700"
+								: " transition-all ease-in-out duration-700"
+						} `}
+				>
+					Select File
+				</label>
+				<div
+					className={
+						files || loading
+							? "translate-x-1/3 transition-all ease-in-out duration-700 w-1/4"
+							: "opacity-0 "
+					}
+				>
+					{files && !loading ? (
+						<p>
+							{files.name}{" "}
+							<FontAwesomeIcon
+								className="ml-2 text-color-green-primary"
+								icon={faCheck}
+							/>
+						</p>
+					) : (
+						false
+					)}
+					{loading ? <LoadingWheel /> : false}
+				</div>
+				<input
+					className="hidden"
+					type="file"
+					id="file-upload"
+					name="file-upload"
+					onChange={handleFileUpload}
+				/>
+			</div>
+
+			<label
+				className="text-xl font-bold text-color-yellow-primary"
+				htmlFor="file-upload"
+			>
+				Your website's name :
+			</label>
 			<input
-				type="file"
-				id="file-upload"
-				name="file-upload"
-				onChange={handleFileUpload}
-			/>
-			<button type="submit">Upload Files</button>
+				type="text"
+				className="input"
+				onChange={handleChange}
+				value={websiteName}
+			></input>
+			{uploading ? (
+				uploading !== "done" ? (
+					<LoadingWheel />
+				) : (
+					<p className="self-center">
+						Deployment started !
+						<FontAwesomeIcon
+							className="ml-2 text-color-green-primary fa-2xl "
+							icon={faCheck}
+						/>
+					</p>
+				)
+			) : (
+				<Button
+					disabled={files || errors ? false : true}
+					type="submit"
+					title="Upload Files"
+				/>
+			)}
 		</form>
 	);
 }
