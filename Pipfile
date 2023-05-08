@@ -14,10 +14,15 @@ flask-sqlalchemy = "*"
 mysql-connector-python = "*"
 argon2-cffi = "*"
 flask-mail = "*"
-celery = "*"
 flask-sse = "*"
+flask-migrate = "*"
+redis = "*"
+flask-cors = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.8"
+
+[packages.celery]
+extras = [ "redis",]
