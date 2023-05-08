@@ -1,34 +1,36 @@
 from flask import Flask
-from backend.websites import websites
 from backend.extensions import s3,mail
-from backend.authentification import authentification
 from .middleware import check_csrf_token
 from flask_jwt_extended import JWTManager
-from .settings import sqlAlchemy_config,JWT_Config,FLask_Mail_Config
-from .database.create_db import create_db
-from .models import db
-
+from .config import config
 from celery import Celery
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from .database.create_db import create_db
+celery = Celery(__name__,backend=config.RESULT_BACKEND ,broker=config.REDIS_URL)
+db = SQLAlchemy()
 
-celery = Celery(__name__, broker='amqp://localhost')
 
 
 def create_app():
     app = Flask(__name__)
+    app.config.from_object(config)
+    celery.conf.update(app.config)
+    migrate = Migrate(app, db)
 
-
-    create_db()
     jwt = JWTManager(app)
-    app.config.from_object(JWT_Config)
-    app.config.from_object(sqlAlchemy_config)
-    app.config.from_object(FLask_Mail_Config)
+
     app.before_request(check_csrf_token)
     db.init_app(app)
     mail.init_app(app)
     with app.app_context():
         db.create_all()
 
+    from backend.stream import stream
+    app.register_blueprint(stream)
+    from backend.websites import websites
     app.register_blueprint(websites)
+    from backend.authentification import authentification
     app.register_blueprint(authentification)
 
 
@@ -49,12 +51,5 @@ def create_app():
                             </body>
                             </html>""")
 
-    # @app.before_request
-    # def before_request():
-    #     db.session.rollback()
-    #     db.create_scoped_session()
-    # @app.teardown_request
-    # def shutdown_session(exception=None):
-    #     db.session.remove()
 
     return app
