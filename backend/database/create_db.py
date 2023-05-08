@@ -1,15 +1,15 @@
-from ..settings import mySql_config
+from ..config import config
 import mysql.connector
 
 def create_db():
     try:
         mydb = mysql.connector.connect(
-        host=mySql_config.host,
-        user=mySql_config.user,
-        password=mySql_config.password
+        host=config.host,
+        user=config.user,
+        password=config.password
         )
         mycursor = mydb.cursor()
-        mycursor.execute(f"CREATE DATABASE {mySql_config.db_name}")
+        mycursor.execute(f"CREATE DATABASE {config.db_name}")
     except Exception as e:
         if e.errno==1007:
             print('database already created')
