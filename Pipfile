@@ -18,6 +18,7 @@ flask-sse = "*"
 flask-migrate = "*"
 redis = "*"
 flask-cors = "*"
+click = "*"
 
 [dev-packages]
 
