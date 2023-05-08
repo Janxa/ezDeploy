@@ -8,7 +8,7 @@ import re
 ph = PasswordHasher()
 
 def register_user(username,email,password,):
-    user = FindUser(email)
+    user = FindUser(email=email)
     if user:
         raise Exception({"message": "Email already used", "code": 409})
     pattern = re.compile("^[ a-zA-Z0-9!@#$%^&*()_+\-=\[\\]'\"{};:,.<>\/?]+$")
@@ -34,7 +34,7 @@ def hash_password(password):
     return hash
 
 def login(email, password):
-    user = FindUser(email)
+    user = FindUser(email=email)
     if user is None:
         raise UserNotFoundError("User not found")
 
