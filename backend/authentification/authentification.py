@@ -20,7 +20,9 @@ def register():
     try:
         register_user(username,email,password)
     except Exception as e:
+        print(e)
         error = e.args[0]
+        print(error)
         return make_response(jsonify({"error":error["message"]}),error["code"])
     return make_response(jsonify({'Success':'User successfully registered'}),200)
 
