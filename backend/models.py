@@ -1,5 +1,7 @@
 from . import db
 
+
+
 class Users(db.Model):
 
     id = db.Column(db.String(8), primary_key=True ,nullable=False)
@@ -34,7 +36,7 @@ class Websites(db.Model):
     link=db.Column(db.String(255),nullable=True)
     status=db.Column(db.String(8),unique=False,default="pending")
     task=db.Column(db.String(255),nullable=True)
-
+    cancelled=db.Column(db.Boolean,nullable=False,default=False)
 
     user = db.relationship('Users', uselist=False, back_populates='websites')
     def as_dict(self):

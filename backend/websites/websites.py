@@ -3,8 +3,9 @@ from flask_jwt_extended import jwt_required,get_jwt_identity
 from ..config import Config
 from .services import validate_all_files,create_error_json,extract_files_from_zip
 from operator import itemgetter
-from ..database.database import CreateWebsite, GetAllWebsites,FindWebsiteById, DeleteWebsiteById
+from ..database.database import CreateWebsite, GetAllWebsites,FindWebsiteById,UpdateWebsiteCancelled, DeleteWebsiteById
 from ..tasks.upload import upload_to_s3
+from ..tasks.revoke import revoke_task
 from backend.extensions.aws_s3 import s3
 from backend.errors import ErrorList
 import base64
@@ -32,9 +33,39 @@ def uploading():
         CreateWebsite(user_id,name,task.id)
         return make_response({"task_id":task.id,"website_name":name},200)
 
+@websites.route("/cancel",methods=['DELETE'])
+@jwt_required()
+def canceling():
+        user_id = get_jwt_identity()
+
+        if not request.is_json:
+                abort(400, {"message":'Invalid request data: expected JSON',"error":"data is not json"})
+        data = request.get_json()
+
+        if "website_id" not in data:
+                abort(400, {"message":'Missing website id',"error":"no website id"})
+
+        if not isinstance(data["website_id"],str):
+                abort(400, {"message":'Id must be a string',"error":"website id is not a string"})
+        website_id = request.get_json()["website_id"]
+        try:
+                website = FindWebsiteById(website_id)
+        except Exception as e:
+                error=str(e)
+                abort(404, {"message":"Website does not exist or is already deleted","error":error})
+        website_name=website.name
+        website.cancelled = True
+        try:
+                UpdateWebsiteCancelled(website_id)
+        except Exception as e:
+                error=str(e)
+                abort(404, {"message":"Website Already Cancelled","error":error})
+        revoke_task(website.task,website_id)
+        return make_response({"website_id":website_id,"website_name":website_name},200)
+
+
 @websites.route("/delete",methods=['DELETE'])
 @jwt_required()
-
 def deleting():
         user_id = get_jwt_identity()
         bucket =  s3.Bucket(Config.bucket_name)
@@ -52,7 +83,6 @@ def deleting():
 
         try:
                 website = FindWebsiteById(website_id)
-
         except Exception as e:
                 error=str(e)
                 abort(404, {"message":"Website does not exist or is already deleted","error":error})
@@ -91,27 +121,6 @@ def deleting():
 def show():
         user_id = get_jwt_identity()
         websites=GetAllWebsites(user_id)
-        # bucket =  s3.Bucket(aws_config.bucket_name)
-        # websites = {}
-        # file_found=False
-        # for _ in  bucket.objects.filter(Prefix=user_id):
-        #         print("file_found")
-        #         file_found=True
-        #         break
-        # if not file_found:
-        #         return make_response('',204)
-        # for file in bucket.objects.filter(Prefix=user_id):
-        #         print(file.key)
-        #         print(file.key.split('/',1))
-        #         id,full_file_name,=file.key.split('/',1)
-        #         print(id,full_file_name)
-        #         website_name,file_name=full_file_name.split('/',1)
-        #         print(id,full_file_name, website_name,file_name)
-        #         if not website_name in websites:
-        #                 websites[website_name]=[]
-        #                 websites[website_name].append(file_name)
-        #         else : websites[website_name].append(file_name)
-        #         print(id,website_name,file_name)
         return make_response(jsonify(websites),200)
 
 @websites.route("/getById/<website_id>",methods=['GET'])
