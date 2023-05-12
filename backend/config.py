@@ -21,7 +21,10 @@ class Config:
 
     # sqlAlchemy_config
     SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI')
-
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 3000,
+    }
     # JWT_Config
     JWT_TOKEN_LOCATION = ['cookies','headers']
     JWT_ACCESS_COOKIE_NAME = 'access_token_cookie'
@@ -39,6 +42,7 @@ class Config:
 
     # Result backend settings
     CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+
 
 
 
