@@ -8,6 +8,9 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from .extensions import db
 from celery import Celery, Task
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+
 
 def celery_init_app(app: Flask) -> Celery:
     class FlaskTask(Task):
@@ -25,16 +28,19 @@ def celery_init_app(app: Flask) -> Celery:
 def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
-    celery_init_app(app)
+    celery = celery_init_app(app)
     migrate = Migrate(app, db)
 
     jwt = JWTManager(app)
+
 
     app.before_request(check_csrf_token)
     db.init_app(app)
     mail.init_app(app)
     with app.app_context():
         db.create_all()
+        Session = sessionmaker(bind=db.engine,autoflush=True)
+        app.extensions["Session"] = Session
 
     from backend.stream import stream
     app.register_blueprint(stream)
