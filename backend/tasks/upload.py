@@ -1,17 +1,15 @@
-from celery.signals import worker_process_init,worker_process_shutdown
 from .revoke import revoke_task
 from ..config import Config
 from ..database.database import UpdateWebsiteStatus,FindWebsiteByTask,UpdateWebsiteTask,UpdateWebsiteLink
 from werkzeug.datastructures import FileStorage
 from backend.extensions.aws_s3 import s3
-from backend.extensions.Session import Session,db_session
 import time
 from ..errors import WebsiteNotFoundError
 from ..models import Websites
 from sqlalchemy.exc import PendingRollbackError
 from .. import db
 from flask import current_app
-from sqlalchemy.orm import scoped_session, sessionmaker
+# from sqlalchemy.orm import scoped_session, sessionmaker
 from celery import shared_task
 
 
@@ -44,27 +42,27 @@ from celery import shared_task
 # def shutdown_worker(**kwargs):
 #     db_session.remove()
 #Debuggin version
+
 @shared_task(bind=True)
 def upload_to_s3(self,user_id, name, files):
     with current_app.app_context():
-        Session.bind=db.engine
+        Session=current_app.extensions["Session"]
         session = Session()
+        print("session", session)
         print("task recieved")
         print(self.request.id)
 
         website = session.query(Websites).filter_by(task=self.request.id).first()
         if website is None:
-             raise WebsiteNotFoundError(f"Website with ID {id} not found.")
+             raise WebsiteNotFoundError(f"Website with ID {self.request.id} not found.")
         print(website)
         try:
             bucket_name = Config.bucket_name
             index = None
             i=0
             for file_data in files:
-
-                if website.cancelled:  # check if the cancel flag is set
+                if website.cancelled:
                     break
-
                 time.sleep(0.4)
                 i+=1
                 file_content, file_name = file_data["file_content"], file_data["filename"]
@@ -77,27 +75,25 @@ def upload_to_s3(self,user_id, name, files):
                 print('finished processing', file_name)
 
                 if file_name.endswith("/index.html"):
+                    print("index found")
                     index_link = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
             if not website.cancelled:
                 try:
-
+                    print("website => ", website)
                     UpdateWebsiteTask(website, None, session=session)
                     UpdateWebsiteLink(website, index_link, session=session)
                     UpdateWebsiteStatus(website, "success", session=session)
-                    session.commit()
+
                 except PendingRollbackError:
                     db.session.rollback()
                     raise
             else:
-
                 revoke_task(self.request.id,website.id)
         except:
             try:
                 if not website.cancelled:
-
                     UpdateWebsiteStatus(website.id,"failure")
                 else:
-
                     revoke_task(self.request.id,website.id)
             except PendingRollbackError:
                     db.session.rollback()
