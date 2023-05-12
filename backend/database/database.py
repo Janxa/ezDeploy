@@ -95,19 +95,33 @@ def CreateWebsite(user_id,name,task_id):
     print("Website added : ",website)
     return website
 
-def UpdateWebsiteStatus(website,status):
+def UpdateWebsiteStatus(website, status ,session=None):
     website.status=status
-    db.session.commit()
+    session.commit()
     return website
 
-def UpdateWebsiteTask(website,task):
+def UpdateWebsiteTask(website, task, session=None):
+    if not session:
+        session=db.session
     try:
-        print("website.task",website.task)
-
-        website.task=task
-        print('website.task',website.task)
-        db.session.commit()
+        website.task = task
+        session.commit()
     except Exception as e:
+        session.rollback()
+        raise e
+    return website
+
+def UpdateWebsiteLink(website, link, session=None):
+    if not session:
+        session=db.session
+    try:
+        website.link = link
+
+        session.commit()
+
+    except Exception as e:
+        session.rollback()
+
         raise e
     return website
 
@@ -137,13 +151,16 @@ def FindWebsiteById(id):
     print("website found", website.name )
     return website
 
-def UpdateWebsiteLink(website,link):
-    try:
-        print("website.task",website.link)
 
-        website.link=link
-        print('website.link',website.link)
-        db.session.commit()
-    except Exception as e:
-        raise e
-    return website
+def UpdateWebsiteCancelled(website_id, session=None):
+    if session:
+        website = session.query(Websites).filter_by(id=website_id).first()
+    else:
+        website = Websites.query.filter_by(id=website_id).first()
+
+    if website:
+        website.cancelled = True
+        if session:
+            session.commit()
+        else:
+            db.session.commit()
