@@ -1,7 +1,7 @@
 import click
 from flask.cli import FlaskGroup
-from backend import create_app, db,celery
-from backend.database.create_db import create_db
+from backend import create_app, db
+from backend.database.create_db import create_db,drop_db
 
 
 @click.group()
@@ -11,7 +11,7 @@ def cli():
 @cli.group()
 def db():
     pass
-
+""
 @db.command()
 def create_database():
         print("creating db")
@@ -19,7 +19,8 @@ def create_database():
 
 @db.command()
 def dump_database():
-        print("dumping db")
+        print("dropping db")
+        drop_db()
 
 
 if __name__ == '__main__':
