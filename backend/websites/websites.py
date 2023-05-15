@@ -29,6 +29,7 @@ def uploading():
                   file_content = base64.b64encode(f.read()).decode('utf-8')
                   filename = f.filename
                   decoded_files.append({'filename': filename, 'file_content': file_content})
+       #later, make it so that task is called only once the db changes are commited, then update task in db to avoid unavailable website in the task
         task = upload_to_s3.delay(user_id, name, decoded_files)
         CreateWebsite(user_id,name,task.id)
         return make_response({"task_id":task.id,"website_name":name},200)
@@ -100,7 +101,7 @@ def deleting():
         if not file_found:
 
                 DeleteWebsiteById(website_id)
-                abort(404, {"message": "Website has already been deleted"})
+                abort(404, {"message": "Website has already been deleted from bucket"})
         try:
                 for file in bucket.objects.filter(Prefix=to_delete):
                         print("\n deleting",file)
