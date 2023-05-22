@@ -77,6 +77,20 @@ module.exports = {
 					900: "#3B0000",
 				},
 			},
+			keyframes: {
+				growDown: {
+					"0%": {
+						transform: "scaleY(0)",
+					},
+					"80%": {
+						transform: "scaleY(1.1)",
+					},
+					"100%": {
+						transform: "scaleY(1)",
+					},
+				},
+			},
+			animation: { growDown: "growDown 0.45s ease-in-out forwards" },
 		},
 	},
 	plugins: [],
