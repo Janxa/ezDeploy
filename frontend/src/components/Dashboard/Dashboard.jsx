@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import FileList from "./FileList";
 import WebsiteService from "../../services/websites.service";
-import Button from "../Common/Button.jsx";
+import ProgressBar from "../Common/ProgressBar";
 import LoadingWheel from "../Common/LoadingWheel";
+
+import RenderTreatedWebsites from "./RenderTreatedWebsites";
 const Dashboard = () => {
 	const [websites, setWebsites] = useState([]);
 	const [details, setDetails] = useState("");
@@ -19,9 +21,11 @@ const Dashboard = () => {
 		const pendingWebsites = [];
 		const treatedWebsites = [];
 		data.forEach((item) => {
+			console.log("item=>", item);
 			if (item.task == null) treatedWebsites.push(item);
 			else pendingWebsites.push(item);
 		});
+		console.log({ pendingWebsites, treatedWebsites });
 		return { pendingWebsites, treatedWebsites };
 	};
 	//inital websites fetch
@@ -129,15 +133,21 @@ const Dashboard = () => {
 			});
 		};
 	}, [pendingWebsites]);
-	const renderStatus = (item) => {
+	const renderProgress = (item) => {
 		if (item.task in streamData) {
 			const { state, info } = streamData[item.task];
 			const status = state.toLowerCase();
 
-			if (status === "pending") {
+			if (status === "pending" || (status === "progress" && !info)) {
 				return <LoadingWheel />;
 			} else if (status === "progress" && info) {
-				return <p>{info.current}</p>;
+				return (
+					<div>
+						<ProgressBar value={info.index} max={info.total} />
+
+						<p>{info.current}</p>
+					</div>
+				);
 			} else if (status === "success") {
 				return <p>Website uploaded,finalizing </p>;
 			} else if (status === "failure") {
@@ -147,7 +157,6 @@ const Dashboard = () => {
 			return <LoadingWheel />;
 		}
 	};
-
 	const showDetails = (websiteName) => {
 		if (Object.keys(details)[0] == websiteName) {
 			console.log("reset");
@@ -178,100 +187,79 @@ const Dashboard = () => {
 			}
 		}
 	};
+
+	const handleCancel = async (website_id) => {
+		console.log("cancelling", website_id);
+		try {
+			await WebsiteService.cancelUpload(website_id);
+			setPendingWebsites((prevWebsites) =>
+				prevWebsites.filter((website) => website.id !== website_id)
+			);
+		} catch (error) {
+			if (error.response && error.response.status === 404) {
+				// Website not found or already deleted
+				setWebsites((prevWebsites) =>
+					prevWebsites.filter((website) => website.id !== website_id)
+				);
+			} else {
+				// Handle other errors
+				console.log("Error cancelling task:", error);
+				// Or show a message to the user
+			}
+		}
+	};
 	return (
-		<main className="mt-10 md:mt-32 w-full flex flex-col justify-around h-3/5">
-			<h2 className="bg-color-bg-dark w-4/5 md:w-1/2 lg:w-1/3 mx-auto p-2 shadow-md rounded-md text-2xl font-bold text-center m-2">
+		<main className="mt-10 md:mt-32 w-full flex flex-col justify-around h-4/5">
+			<h2 className="bg-flat-700 w-4/5 md:w-1/2 lg:w-2/3 mx-auto p-2 shadow-md rounded-md text-2xl  font-bold text-center m-2">
 				Dashboard
 			</h2>
-			<div className="bg-color-bg-dark w-4/5 md:w-1/2 lg:w-1/3 mx-auto p-5 shadow-md rounded-md  flex flex-col overflow-hidden">
-				<ul className=" text-center overflow-scroll">
-					{websites == "" && pendingWebsites.length == 0 ? (
-						loading ? (
-							<LoadingWheel />
-						) : (
-							<li>No websites found</li>
-						)
+			<div className="bg-flat-700 w-4/5 h-4/5 md:w-1/2 lg:w-2/3  mx-auto p-5 shadow-md rounded-md">
+				{websites.length === 0 && pendingWebsites.length === 0 ? (
+					loading ? (
+						<LoadingWheel />
 					) : (
-						websites.map((item, key) => {
-							return (
-								<li
-									key={key}
-									className="flex flex-col border-b border-gray-400 border-dashed mb-4 py-2 "
-								>
-									{item.status.toLowerCase() == "pending" ? (
+						<p className="text-center">No websites found</p>
+					)
+				) : (
+					<div className="grid grid-cols-6">
+						<div className="hidden">
+							<p className="underline decoration-[3px]  underline-offset-4 decoration-chili-500 w-fit">
+								Website
+							</p>
+							<p className="underline decoration-[3px] underline-offset-4 decoration-chili-500 w-fit">
+								Status
+							</p>
+							<p className="underline col-span-2 decoration-[3px] underline-offset-4 decoration-chili-500 w-fit">
+								Link
+							</p>
+							<p className="underline decoration-[3px] underline-offset-4 decoration-chili-500 w-fit">
+								Options
+							</p>
+						</div>
+						<div className="grid col-span-6 gap-y-8">
+							<RenderTreatedWebsites websites={websites} />
+							{/*
+								{pendingWebsites.map((item, key) => (
+									<tr
+										key={key}
+										className="flex flex-col border-b border-gray-400 border-dashed mb-4 py-2"
+									>
 										<div className="flex flex-row items-center">
 											<p className="w-1/2 text-center tex">{item.name}</p>
 											<div className="w-1/2">
 												<p>status:</p>
-												<LoadingWheel />
-											</div>
-										</div>
-									) : (
-										<div>
-											<p className="border p-1 m-1">{item.name}</p>
-											<div className=" flex w-full justify-around  ">
+												{renderProgress(item)}
 												<Button
-													title="Details"
-													onClick={() => showDetails(item.name)}
-												/>
-												<Button title="Update" />
-												<Button
-													title="Delete"
-													onClick={() => handleDelete(item.id)}
+													title="Cancel"
+													onClick={() => handleCancel(item.id)}
 												/>
 											</div>
 										</div>
-									)}
-									{Object.keys(details)[0] == item ? (
-										<FileList website={details[Object.keys(details)[0]]} />
-									) : (
-										false
-									)}
-								</li>
-							);
-						})
-					)}
-					{websites == "" && pendingWebsites.length == 0 ? (
-						loading ? (
-							<LoadingWheel />
-						) : (
-							<li>No websites found</li>
-						)
-					) : (
-						pendingWebsites.map((item, key) => {
-							return (
-								<li
-									key={key}
-									className="flex flex-col border-b border-gray-400 border-dashed mb-4 py-2 "
-								>
-									{item.status.toLowerCase() == "pending" ? (
-										<div className="flex flex-row items-center">
-											<p className="w-1/2 text-center tex">{item.name}</p>
-											<div className="w-1/2">
-												<p>status:</p>
-												{renderStatus(item)}
-											</div>
-										</div>
-									) : (
-										<div className=" flex w-full justify-around  ">
-											<Button
-												title="Details"
-												onClick={() => showDetails(item)}
-											/>
-											<Button title="Update" />
-											<Button title="Delete" onClick={console.log("clicked")} />
-										</div>
-									)}
-									{Object.keys(details)[0] == item ? (
-										<FileList website={details[Object.keys(details)[0]]} />
-									) : (
-										false
-									)}
-								</li>
-							);
-						})
-					)}
-				</ul>
+									</tr>
+								))} */}
+						</div>
+					</div>
+				)}
 			</div>
 		</main>
 	);
