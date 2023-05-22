@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { registerSchema } from "../../joi_schemas/register_schema";
 import AuthService from "../../services/authentification.service";
+import Input from "../Common/Input.jsx";
+import Button from "../Common/Button";
 import EmailVerificationMessage from "../EmailVerificationMessage";
 import axios from "axios";
 function Register(props) {
@@ -11,6 +13,13 @@ function Register(props) {
 	const schema = registerSchema;
 
 	const handleChange = ({ currentTarget: input }) => {
+		if (errors[input.name]) {
+			setErrors((errors) => {
+				const updatedErrors = { ...errors };
+				delete updatedErrors[input.name];
+				return updatedErrors;
+			});
+		}
 		setData((data) => {
 			console.log(data, [input.name], input.value);
 			return {
@@ -22,7 +31,19 @@ function Register(props) {
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		let errors = {};
+		const validationResult = schema.validate(data, { abortEarly: false });
+		if (validationResult.error) {
+			// Validation failed
+			console.error(validationResult.error.details);
+			const error_list = { ...errors };
 
+			for (let error of validationResult.error.details) {
+				error_list[error.context.label] = error.message;
+			}
+
+			setErrors(error_list);
+			return;
+		}
 		try {
 			const res = await axios.post("/api/authentification/register", data);
 			setEmailsent(true);
@@ -59,78 +80,71 @@ function Register(props) {
 		}
 	};
 	return (
-		<div className=" flex flex-col">
+		<div className=" flex flex-col ">
 			{!emailsent ? (
-				<form onSubmit={handleSubmit} className="flex flex-col">
+				<form onSubmit={handleSubmit} className="flex flex-col p-5 ">
 					<h2 className="font-bold text-2xl text-color-yellow-primary  self-center ">
 						Register
 					</h2>
 					<label for="username" className="font-medium text-sm py-1">
-						Username:{" "}
+						Username:
 					</label>
-					<input
+					<Input
 						onChange={handleChange}
 						value={data.username}
 						type="text"
 						name="username"
 						id="username_input"
-						className={errors["username"] ? "input-invalid" : "input"}
+						valid={errors["username"] ? false : true}
+						errors={errors["username"]}
 					/>
-					{errors["username"] && (
-						<p className="font-medium text-sm py-1 text-color-red-primary">
-							{errors["username"]}
-						</p>
-					)}
+
 					<label for="email" className="text-sm font-medium py-1">
 						Email:{" "}
 					</label>
 
-					<input
+					<Input
 						onChange={handleChange}
 						value={data.email}
 						type="email"
 						name="email"
 						id="email_input"
-						className={errors["email"] ? "input-invalid" : "input"}
+						valid={errors["email"] ? false : true}
+						errors={errors["email"]}
 					/>
-					{errors["email"] && (
-						<p className="font-medium text-sm py-1 text-color-red-primary">
-							{errors["email"]}
-						</p>
-					)}
+
 					<label for="password" className="text-sm font-medium py-1">
-						Password:{" "}
+						Password:
 					</label>
 
-					<input
+					<Input
 						onChange={handleChange}
 						value={data.password}
 						type="password"
 						name="password"
 						id="password_input"
-						className={errors["email"] ? "input-invalid" : "input"}
+						valid={errors["password"] ? false : true}
+						errors={errors["password"]}
 					/>
-					{errors["password"] && (
-						<p className="font-medium text-sm py-1 text-color-red-primary">
-							{errors["password"]}
-						</p>
-					)}
-					<button
-						type="submit"
-						className="my-2 py-2 bg-color-blue-primary hover:bg-color-blue-secondary font-medium text-sm rounded-md border-t"
-					>
-						Register
-					</button>
+
 					{errors["request"] && (
-						<p className="font-medium text-sm py-1 text-color-red-primary self-center">
+						<p className="text-md my-2 text-center w-full  text-invalid-500 self-center">
 							{errors["request"]}
 						</p>
 					)}
+
+					<Button
+						title="Register"
+						type="submit"
+						disabled={
+							data.email && data.password && data.username ? false : true
+						}
+					/>
 					<p className="text-sm font-light self-center mt-2 ">
 						Already got an account ?
 					</p>
 					<button
-						className="font-medium  text-color-blue-primary underline  decoration-dashed  "
+						className="font-medium   underline  decoration-dashed  "
 						onClick={() => props.formSwitch("login")}
 					>
 						Sign in
