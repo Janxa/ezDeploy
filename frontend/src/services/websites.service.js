@@ -13,7 +13,17 @@ function getCookie(csrf_access_token) {
 const getWebsiteById = (website_id) => {
 	return axios.get(API_URL + "getById/" + website_id);
 };
-
+const cancelUpload = async (website_id) => {
+	return await axios.delete(API_URL + "cancel", {
+		data: { website_id: website_id },
+		credentials: "same-origin",
+		withCredentials: true,
+		headers: {
+			"Content-Type": "application/json",
+			"X-CSRF-TOKEN": getCookie("csrf_access_token"),
+		},
+	});
+};
 const uploadWebsite = async (file, websiteName) => {
 	const formData = new FormData();
 	formData.append("file", file);
@@ -29,7 +39,7 @@ const uploadWebsite = async (file, websiteName) => {
 };
 
 const deleteWebsite = async (website_id) => {
-	return axios.delete(API_URL + "delete", {
+	return await axios.delete(API_URL + "delete", {
 		data: { website_id: website_id },
 		credentials: "same-origin",
 		withCredentials: true,
@@ -45,5 +55,6 @@ const WebsiteService = {
 	uploadWebsite,
 	getWebsites,
 	getWebsiteById,
+	cancelUpload,
 };
 export default WebsiteService;
