@@ -4,6 +4,7 @@ import {
 	faLaptopCode,
 	faCircle,
 	faGears,
+	faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Common/Button.jsx";
 import { useEffect, useRef } from "react";
@@ -16,7 +17,6 @@ function RenderTreatedWebsites({ websites }) {
 		console.log("key=", key, show, isAnimating);
 		if (!isAnimating) {
 			setShow(show === key ? null : key);
-			console.log("New show :", show);
 			setIsAnimating(true);
 			setTimeout(() => {
 				setIsAnimating(false);
@@ -37,63 +37,86 @@ function RenderTreatedWebsites({ websites }) {
 		};
 	}, [show, handleClickOutside]);
 	return websites.map((item, key) => (
-		<tr
-			key={key}
-			className="flex flex-row border-b border-gray-400 border-dashed mb-4 py-2 "
-		>
+		<div key={key} className=" col-span-6 grid grid-cols-1  ">
 			{item.status.toLowerCase() === "success" ? (
-				<>
-					<td className="flex flex-row">
+				<div className=" grid grid-cols-2  auto-rows-min gap-y-2   ">
+					<p className="bg-chili-500 rounded-l-xl pl-4">Website</p>
+					<div className="pr-2 flex flex-row justify-left  items-center bg-chili-500 rounded-r-xl">
 						<FontAwesomeIcon icon={faLaptopCode} className="fa-sm" />
-						<p className="pl-4 w-1/2 text-left text-sm font-bold ">
-							{item.name}
-						</p>
-					</td>
-					<td className="flex flex-row">
-						<FontAwesomeIcon icon={faCircle} className="fa-sm" />
-						<p className="pl-4 w-1/2 text-left text-sm font-bold ">
+						<p className="pl-2  text-left text-sm font-bold ">{item.name}</p>
+					</div>
+
+					<p className=" pl-4">Status</p>
+					<div className="pr-2 flex flex-row justify-left items-center">
+						<FontAwesomeIcon icon={faCircle} className="fa-sm text-jade-500" />
+						<p className="pl-2 text-left text-sm font-bold  text-jade-500">
 							{item.status}
 						</p>
-					</td>
-					<td className="flex flex-row relative">
-						<FontAwesomeIcon
-							icon={faGears}
+					</div>
+
+					<p className="pl-4">Link</p>
+					<a
+						href={item.link}
+						className=" pr-2 text-left text-sm overflow-x-scroll "
+					>
+						{item.link}
+					</a>
+
+					<p className=" pl-4">Options</p>
+					<div className="flex flex-row justify-left items-center">
+						<div
 							onClick={() => handleGearIconClick(key)}
-							className="cursor-pointer hover:scale-125 transition-all"
-						/>
-
-						{show === key && (
-							<div
-								ref={dropdownRef}
-								className={`${
-									isAnimating
-										? "absolute flex  flex-col right-5 opacity-0 transition-opacity duration-200"
-										: "absolute flex flex-col right-5 opacity-100 transition-opacity duration-200"
-								} `}
-							>
-								<Button
-									className="z-50"
-									onClick={() => showDetails(item.name)}
-									title="Update"
-								/>
-
-								<Button className="z-50 " title="Update" />
-								<Button
-									className="z-50"
-									onClick={() => handleDelete(item.id)}
-									title="Delete"
-								/>
-							</div>
-						)}
-					</td>
-				</>
+							ref={dropdownRef}
+							className={`${
+								show === key
+									? `bg-chili-400 w-1/2 relative ${
+											show === key ? "rounded-t-full" : "rounded-full"
+									  } px-4  py-1 flex justify-end items-center cursor-pointer transition-all ease-in-out duration-200`
+									: `bg-chili-400 w-1/2 relative ${
+											show === key ? "rounded-t-full" : "rounded-full"
+									  } px-4 py-1 flex justify-end items-center cursor-pointer transition-all ease-in-out  duration-200`
+							} `}
+						>
+							<FontAwesomeIcon
+								icon={faGears}
+								onClick={() => handleGearIconClick(key)}
+							/>
+							<FontAwesomeIcon
+								icon={faChevronDown}
+								className={`fa-xs pl-2  ${
+									show === key
+										? "rotate-180 translate-x-1/3"
+										: "rotate-0 translate-x-0"
+								} transition-all ease-in-out duration-200 `}
+							/>
+							{show === key && (
+								<div
+									className={`${
+										isAnimating
+											? "absolute flex left-0 right-0 bottom-0 -top-10 flex-col  opacity-0 transition-all duration-200 animate-growDown"
+											: "absolute flex left-0 right-0 bottom-0 top-6 flex-col  opacity-200 transition-all duration-100 bg-chili-400 animate-growDown"
+									} `}
+								>
+									<button className="z-50 bg-chili-400 ">Open</button>
+									<button className="z-50 bg-chili-400 ">Update</button>
+									<button
+										className="z-50 bg-chili-400 rounded-b-full pb-1  "
+										onClick={() => handleDelete(item.id)}
+									>
+										Delete
+									</button>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
 			) : (
 				<div>
 					<p className="border p-1 m-1">{item.name}</p>
 					<div className="flex w-ftablel justify-around"></div>
 				</div>
 			)}
-		</tr>
+		</div>
 	));
 }
 
