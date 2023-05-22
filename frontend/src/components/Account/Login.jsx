@@ -102,7 +102,7 @@ function Login(props) {
 	};
 
 	return (
-		<div className="flex flex-col ">
+		<div className="p-5 ">
 			{!emailSent ? (
 				<form onSubmit={handleLogin} className="flex flex-col">
 					<h2 className="font-bold text-2xl text-flat-100  self-center">
@@ -135,14 +135,16 @@ function Login(props) {
 					/>
 
 					{errors["request"] && (
-						<p className=" rounded-sm text-md my-2 text-center w-full    text-invalid-500 self-center">
-							<FontAwesomeIcon icon={faTriangleExclamation} />{" "}
+						<p className="text-md my-2 text-center w-fulls text-invalid-500 self-center">
+							<FontAwesomeIcon icon={faTriangleExclamation} />
 							{errors["request"]}
 						</p>
 					)}
-					<Button type="submit" title="Login" />
+					<Button type="submit" title="Sign in" />
 
-					<p className="text-sm font-light self-center ">No account yet ?</p>
+					<p className="text-sm font-light self-center mt-2 ">
+						No account yet ?
+					</p>
 					<button
 						className=" font-medium  text-color-blue-primary underline  decoration-dashed  "
 						onClick={() => props.formSwitch("register")}
