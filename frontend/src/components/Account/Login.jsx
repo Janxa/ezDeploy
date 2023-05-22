@@ -1,38 +1,62 @@
 import { useContext, useState } from "react";
 import { loginSchema } from "../../joi_schemas/login_schema";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/authentification.service";
 import { AuthContext } from "../../context/AuthProvider";
 import ErrorMessage from "../ErrorMessage";
 import axios from "axios";
 import EmailVerificationMessage from "../EmailVerificationMessage";
+import Button from "../Common/Button";
+import Input from "../Common/Input";
 function Login(props) {
 	const [data, setData] = useState({ email: "", password: "" });
 	const [errors, setErrors] = useState({});
 	const [emailSent, setEmailSent] = useState(false);
-	const schema = loginSchema;
 	const { login } = useContext(AuthContext);
 	const { isLoggedIn } = useContext(AuthContext);
+	const schema = loginSchema;
 	const navigate = useNavigate();
 
 	const handleChange = ({ currentTarget: input }) => {
+		if (errors[input.name]) {
+			setErrors((errors) => {
+				const updatedErrors = { ...errors };
+				delete updatedErrors[input.name];
+				return updatedErrors;
+			});
+		}
+
 		setData((data) => {
-			console.log(data, [input.name], input.value);
 			return {
 				...data,
 				[input.name]: input.value,
 			};
 		});
 	};
+
 	const handleLogin = async (event) => {
 		event.preventDefault();
 		let errors = {};
 
+		const validationResult = schema.validate(data, { abortEarly: false });
+		if (validationResult.error) {
+			// Validation failed
+			console.error(validationResult.error.details);
+			const error_list = { ...errors };
+
+			for (let error of validationResult.error.details) {
+				error_list[error.context.label] = error.message;
+			}
+
+			setErrors(error_list);
+			return;
+		}
+
 		try {
 			const res = await AuthService.login(data["email"], data["password"]);
-			console.log("Login success:", res);
 			login();
-			console.log(isLoggedIn, "is logged ?");
 			navigate("/dashboard");
 		} catch (error) {
 			console.log("Login error:", error);
@@ -49,8 +73,10 @@ function Login(props) {
 				);
 			} else if (error.response) {
 				errors["request"] = error.response.data.error;
+				console.log(errors);
 			} else {
 				errors["request"] = error.request.statusText;
+				console.log(errors);
 			}
 			setErrors(errors);
 			console.log(errors);
@@ -76,63 +102,52 @@ function Login(props) {
 	};
 
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col ">
 			{!emailSent ? (
 				<form onSubmit={handleLogin} className="flex flex-col">
-					<h2 className="font-bold text-2xl text-color-yellow-primary  self-center">
+					<h2 className="font-bold text-2xl text-flat-100  self-center">
 						Sign in
 					</h2>
 					<label htmlFor="email" className="font-medium text-sm py-1">
 						Email:
 					</label>
-					<input
+					<Input
 						onChange={handleChange}
 						value={data.email}
 						type="email"
 						name="email"
 						id="email"
-						className={errors["email"] ? "input-invalid" : "input"}
+						valid={errors["email"] ? false : true}
+						errors={errors["email"]}
 					/>
-					{errors["email"] && (
-						<p className="font-medium text-sm py-1 text-color-red-primary">
-							{errors["email"]}
-						</p>
-					)}
+
 					<label htmlFor="password" className="text-sm font-medium py-1">
 						Password:
 					</label>
-					<input
+					<Input
 						onChange={handleChange}
 						value={data.password}
 						type="password"
 						name="password"
 						id="password"
-						className={errors["password"] ? "input-invalid" : "input"}
+						valid={errors["password"] ? false : true}
+						errors={errors["password"]}
 					/>
-					{errors["password"] && (
-						<p className="font-medium text-sm py-1 text-color-red-primary">
-							{errors["password"]}
-						</p>
-					)}
-					<button
-						type="submit"
-						className="my-2 py-2 bg-color-blue-primary hover:bg-color-blue-secondary font-medium text-sm rounded-md border-t"
-					>
-						Login
-					</button>
+
 					{errors["request"] && (
-						<p className="font-medium text-sm py-1 text-color-red-primary self-center">
+						<p className=" rounded-sm text-md my-2 text-center w-full    text-invalid-500 self-center">
+							<FontAwesomeIcon icon={faTriangleExclamation} />{" "}
 							{errors["request"]}
 						</p>
 					)}
-					<p className="text-sm font-light self-center mt-2 ">
-						No account yet ?
-					</p>
+					<Button type="submit" title="Login" />
+
+					<p className="text-sm font-light self-center ">No account yet ?</p>
 					<button
 						className=" font-medium  text-color-blue-primary underline  decoration-dashed  "
 						onClick={() => props.formSwitch("register")}
 					>
-						Sign up{" "}
+						Sign up
 					</button>
 				</form>
 			) : (
