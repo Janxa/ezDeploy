@@ -1,10 +1,9 @@
 function Button({ title, onClick, type, extraStyle, disabled = false }) {
 	const style = disabled
 		? extraStyle +
-		  `emy-2
-        py-2
-        px-2
-        bg-color-gray
+		  ` my-2
+       p-2
+        bg-color-neutral-200
         rounded-xl
         text-gray-500
         cursor-default
@@ -15,17 +14,16 @@ function Button({ title, onClick, type, extraStyle, disabled = false }) {
         duration-700
         border-t`
 		: extraStyle +
-		  `my-2
-        py-2
-        px-2
-        bg-color-blue-primary
-        hover:bg-color-blue-secondary
+		  ` my-2
+       p-2
+        bg-chili-500
+        hover:bg-chili-600
         font-medium
         text-sm
         rounded-xl
         transition-all
         ease-in-out
-        duration-700
+        duration-500
         border-t`;
 
 	return (
