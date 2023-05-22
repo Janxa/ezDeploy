@@ -1,30 +1,9 @@
 function Button({ title, onClick, type, extraStyle, disabled = false }) {
-	const style = disabled
-		? extraStyle +
-		  ` my-2
-       p-2
-        bg-color-neutral-200
-        rounded-xl
-        text-gray-500
-        cursor-default
-        font-medium
-        text-sm
-        transition-all
-        ease-in-out
-        duration-700
-        border-t`
-		: extraStyle +
-		  ` my-2
-       p-2
-        bg-chili-500
-        hover:bg-chili-600
-        font-medium
-        text-sm
-        rounded-xl
-        transition-all
-        ease-in-out
-        duration-500
-        border-t`;
+	const style = ` ${extraStyle} my-2 p-2 rounded-xl font-medium text-sm border-t ${
+		disabled
+			? "bg-flat-600 text-flat-500 cursor-default transition-all ease-in-out duration-500 border-t border-flat-600 "
+			: "bg-chili-500 hover:bg-chili-600 transition-all ease-in-out duration-500"
+	} `;
 
 	return (
 		<button disabled={disabled} type={type} onClick={onClick} className={style}>
