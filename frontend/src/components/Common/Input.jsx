@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faKey } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faKey, faUser } from "@fortawesome/free-solid-svg-icons";
 
 function Input({
 	onChange,
@@ -30,10 +30,12 @@ function Input({
 
 	let icon = null;
 
-	if (type === "password") {
+	if (name === "password") {
 		icon = <FontAwesomeIcon icon={faKey} className="fa-md" />;
-	} else if (type === "email") {
+	} else if (name === "email") {
 		icon = <FontAwesomeIcon icon={faEnvelope} className="fa-md" />;
+	} else if (name == "username") {
+		icon = <FontAwesomeIcon icon={faUser} className="fa-md" />;
 	}
 
 	return (
