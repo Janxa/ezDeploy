@@ -221,22 +221,22 @@ const Dashboard = () => {
 						<p className="text-center">No websites found</p>
 					)
 				) : (
-					<div className="grid grid-cols-6">
-						<div className="hidden">
+					<div className="grid grid-cols-6 overflow-scroll lg:gap-y-8 h-full grid-flow-row-dense content-start">
+						<div className="hidden lg:grid lg:grid-cols-6 lg:col-span-6 lg:gap-x-4 ">
 							<p className="underline decoration-[3px]  underline-offset-4 decoration-chili-500 w-fit">
 								Website
 							</p>
 							<p className="underline decoration-[3px] underline-offset-4 decoration-chili-500 w-fit">
 								Status
 							</p>
-							<p className="underline col-span-2 decoration-[3px] underline-offset-4 decoration-chili-500 w-fit">
+							<p className="underline col-span-2 decoration-[3px] underline-offset-4  decoration-chili-500 w-fit">
 								Link
 							</p>
 							<p className="underline decoration-[3px] underline-offset-4 decoration-chili-500 w-fit">
 								Options
 							</p>
 						</div>
-						<div className="grid col-span-6 gap-y-8">
+						<div className="grid col-span-6 gap-y-8 lg:grid-cols-">
 							<RenderTreatedWebsites websites={websites} />
 							{/*
 								{pendingWebsites.map((item, key) => (
