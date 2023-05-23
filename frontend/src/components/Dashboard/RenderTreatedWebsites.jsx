@@ -87,7 +87,7 @@ function RenderTreatedWebsites({ websites }) {
 								<div
 									className={`${
 										isAnimating
-											? "absolute flex left-0 right-0 bottom-0 transition-all ease-in-out duration-200 h-0	origin-top	top-4 flex-col  opacity-0   bg-chili-400  animate-growDown"
+											? "absolute flex left-0 right-0 bottom-0 transition-all ease-in-out duration-200 h-0	origin-top	top-2 flex-col  opacity-0  z-50  bg-chili-400  animate-growDown"
 											: "absolute flex left-0 right-0 bottom-0 transition-all ease-in-out duration-200 h-fit 	origin-top	top-6 flex-col  opacity-100 z-50 shadow-md bg-chili-400 animate-growDown  rounded-b-3xl "
 									} `}
 								>
