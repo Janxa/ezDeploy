@@ -37,7 +37,10 @@ function RenderTreatedWebsites({ websites }) {
 		};
 	}, [show, handleClickOutside]);
 	return websites.map((item, key) => (
-		<div key={key} className=" grid grid-cols-1 ">
+		<div
+			key={key}
+			className=" grid grid-cols-1 lg:border-b lg:border-chili-100 lg:pb-3 "
+		>
 			{item.status.toLowerCase() === "success" ? (
 				<div className=" grid grid-cols-2 lg:grid-cols-6 auto-rows-min gap-y-2  lg:gap-x-4 ">
 					<p className="bg-chili-500 rounded-l-xl pl-4 lg:hidden">Website</p>
