@@ -209,11 +209,11 @@ const Dashboard = () => {
 		}
 	};
 	return (
-		<main className="mt-10 md:mt-32 w-full flex flex-col justify-around h-4/5">
-			<h2 className="bg-flat-700 w-4/5 md:w-1/2 lg:w-2/3 mx-auto p-2 shadow-md rounded-md text-2xl  font-bold text-center m-2">
+		<main className="mt-10 md:mt-32 w-full flex flex-col  ">
+			<h2 className="bg-flat-700  w-4/5 md:w-1/2 lg:w-11/12 mx-auto p-2 text-2xl  font-bold text-center  shadow-md rounded-md m-2">
 				Dashboard
 			</h2>
-			<div className="bg-flat-700 w-4/5 h-4/5 md:w-1/2 lg:w-2/3  mx-auto p-5 shadow-md rounded-md">
+			<div className="bg-flat-700 w-4/5  md:w-1/2 lg:w-11/12  mx-auto p-5 shadow-md rounded-md">
 				{websites.length === 0 && pendingWebsites.length === 0 ? (
 					loading ? (
 						<LoadingWheel />
@@ -221,8 +221,8 @@ const Dashboard = () => {
 						<p className="text-center">No websites found</p>
 					)
 				) : (
-					<div className="grid grid-cols-6 overflow-scroll lg:gap-y-8 h-full grid-flow-row-dense content-start">
-						<div className="hidden lg:grid lg:grid-cols-6 lg:col-span-6 lg:gap-x-4 ">
+					<div className="grid grid-cols-6 overflow-visible lg:gap-y-8 h-full grid-flow-row-dense content-start">
+						<div className="hidden lg:grid lg:grid-cols-6 lg:col-span-6 lg:gap-x-4 items ">
 							<p className="underline decoration-[3px]  underline-offset-4 decoration-chili-500 w-fit">
 								Website
 							</p>
