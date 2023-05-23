@@ -37,16 +37,16 @@ function RenderTreatedWebsites({ websites }) {
 		};
 	}, [show, handleClickOutside]);
 	return websites.map((item, key) => (
-		<div key={key} className=" col-span-6 grid grid-cols-1  ">
+		<div key={key} className=" grid grid-cols-1 ">
 			{item.status.toLowerCase() === "success" ? (
-				<div className=" grid grid-cols-2  auto-rows-min gap-y-2   ">
-					<p className="bg-chili-500 rounded-l-xl pl-4">Website</p>
-					<div className="pr-2 flex flex-row justify-left  items-center bg-chili-500 rounded-r-xl">
+				<div className=" grid grid-cols-2 lg:grid-cols-6 auto-rows-min gap-y-2  lg:gap-x-4 ">
+					<p className="bg-chili-500 rounded-l-xl pl-4 lg:hidden">Website</p>
+					<div className="pr-2 flex flex-row justify-left  items-center bg-chili-500 lg:bg-transparent rounded-r-xl">
 						<FontAwesomeIcon icon={faLaptopCode} className="fa-sm" />
 						<p className="pl-2  text-left text-sm font-bold ">{item.name}</p>
 					</div>
 
-					<p className=" pl-4">Status</p>
+					<p className=" pl-4 lg:hidden">Status</p>
 					<div className="pr-2 flex flex-row justify-left items-center">
 						<FontAwesomeIcon icon={faCircle} className="fa-sm text-jade-500" />
 						<p className="pl-2 text-left text-sm font-bold  text-jade-500">
@@ -54,28 +54,22 @@ function RenderTreatedWebsites({ websites }) {
 						</p>
 					</div>
 
-					<p className="pl-4">Link</p>
+					<p className="pl-4 lg:hidden">Link</p>
 					<a
 						href={item.link}
-						className=" pr-2 text-left text-sm overflow-x-scroll "
+						className=" pr-2 text-left text-sm overflow-x-scroll col-span-2 "
 					>
 						{item.link}
 					</a>
 
-					<p className=" pl-4">Options</p>
-					<div className="flex flex-row justify-left items-center">
+					<p className=" pl-4 lg:hidden">Options</p>
+					<div className="flex flex-row justify-left items-center col-span-2">
 						<div
 							onClick={() => handleGearIconClick(key)}
 							ref={dropdownRef}
-							className={`${
-								show === key
-									? `bg-chili-400 w-1/2 relative ${
-											show === key ? "rounded-t-full" : "rounded-full"
-									  } px-4  py-1 flex justify-end items-center cursor-pointer transition-all ease-in-out duration-200`
-									: `bg-chili-400 w-1/2 relative ${
-											show === key ? "rounded-t-full" : "rounded-full"
-									  } px-4 py-1 flex justify-end items-center cursor-pointer transition-all ease-in-out  duration-200`
-							} `}
+							className={`${show === key ? "rounded-t-full" : "rounded-full"}
+									 bg-chili-400 w-1/2 relative  px-4  py-1 flex justify-end
+									 items-center cursor-pointer transition-all ease-in-out duration-200`}
 						>
 							<FontAwesomeIcon
 								icon={faGears}
@@ -83,24 +77,26 @@ function RenderTreatedWebsites({ websites }) {
 							/>
 							<FontAwesomeIcon
 								icon={faChevronDown}
-								className={`fa-xs pl-2  ${
+								className={`${
 									show === key
 										? "rotate-180 translate-x-1/3"
 										: "rotate-0 translate-x-0"
-								} transition-all ease-in-out duration-200 `}
+								} fa-xs pl-2  transition-all ease-in-out duration-200 `}
 							/>
 							{show === key && (
 								<div
 									className={`${
 										isAnimating
-											? "absolute flex left-0 right-0 bottom-0 -top-10 flex-col  opacity-0 transition-all duration-200 animate-growDown"
-											: "absolute flex left-0 right-0 bottom-0 top-6 flex-col  opacity-200 transition-all duration-100 bg-chili-400 animate-growDown"
+											? "absolute flex left-0 right-0 bottom-0 transition-all ease-in-out duration-200 h-0	origin-top	top-4 flex-col  opacity-0   bg-chili-400  animate-growDown"
+											: "absolute flex left-0 right-0 bottom-0 transition-all ease-in-out duration-200 h-fit 	origin-top	top-6 flex-col  opacity-100 z-50 shadow-md bg-chili-400 animate-growDown  rounded-b-3xl "
 									} `}
 								>
-									<button className="z-50 bg-chili-400 ">Open</button>
-									<button className="z-50 bg-chili-400 ">Update</button>
+									<a href={item.link} className="z-50 mx-auto">
+										Open
+									</a>
+									<button className="z-50">Update</button>
 									<button
-										className="z-50 bg-chili-400 rounded-b-full pb-1  "
+										className="z-50 pb-1"
 										onClick={() => handleDelete(item.id)}
 									>
 										Delete
