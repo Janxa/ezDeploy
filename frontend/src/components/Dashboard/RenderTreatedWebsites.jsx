@@ -37,12 +37,9 @@ function RenderTreatedWebsites({ websites }) {
 		};
 	}, [show, handleClickOutside]);
 	return websites.map((item, key) => (
-		<div
-			key={key}
-			className=" grid grid-cols-1 lg:border-b lg:border-chili-100 lg:pb-3 "
-		>
+		<div key={key} className=" grid grid-cols-1  lg:pb-3 ">
 			{item.status.toLowerCase() === "success" ? (
-				<div className=" grid grid-cols-2 lg:grid-cols-6 auto-rows-min gap-y-2  lg:gap-x-4 ">
+				<div className=" grid grid-cols-2 lg:grid-cols-6 auto-rows-min gap-y-4   lg:gap-x-4 ">
 					<p className="bg-chili-500 rounded-l-xl pl-4 lg:hidden">Website</p>
 					<div className="pr-2 flex flex-row justify-left  items-center bg-chili-500 lg:bg-transparent rounded-r-xl">
 						<FontAwesomeIcon icon={faLaptopCode} className="fa-sm" />
@@ -60,18 +57,18 @@ function RenderTreatedWebsites({ websites }) {
 					<p className="pl-4 lg:hidden">Link</p>
 					<a
 						href={item.link}
-						className=" pr-2 text-left text-sm overflow-x-scroll col-span-2 "
+						className=" pr-2 text-left text-sm overflow-x-scroll lg:col-span-2 "
 					>
 						{item.link}
 					</a>
 
 					<p className=" pl-4 lg:hidden">Options</p>
-					<div className="flex flex-row justify-left items-center col-span-2">
+					<div className="flex flex-row justify-left items-center lg:col-span-2">
 						<div
 							onClick={() => handleGearIconClick(key)}
 							ref={dropdownRef}
 							className={`${show === key ? "rounded-t-full" : "rounded-full"}
-									 bg-chili-400 w-1/2 relative  px-4  py-1 flex justify-end
+									 bg-chili-400 w-1/2 relative  px-4  lg:w-3/4 py-1 flex justify-end
 									 items-center cursor-pointer transition-all ease-in-out duration-200`}
 						>
 							<FontAwesomeIcon
