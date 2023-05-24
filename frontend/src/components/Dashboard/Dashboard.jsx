@@ -1,9 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
-import FileList from "./FileList";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+	faLaptopCode,
+	faCircle,
+	faGears,
+	faChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
 import WebsiteService from "../../services/websites.service";
 import ProgressBar from "../Common/ProgressBar";
 import LoadingWheel from "../Common/LoadingWheel";
-
+import Button from "../Common/Button";
 import RenderTreatedWebsites from "./RenderTreatedWebsites";
 const Dashboard = () => {
 	const [websites, setWebsites] = useState([]);
@@ -142,7 +148,10 @@ const Dashboard = () => {
 				return <LoadingWheel />;
 			} else if (status === "progress" && info) {
 				return (
-					<div>
+					<div
+						className="w-full flex items-center flex-col
+					 "
+					>
 						<ProgressBar value={info.index} max={info.total} />
 
 						<p>{info.current}</p>
@@ -238,25 +247,32 @@ const Dashboard = () => {
 						</div>
 						<div className="grid col-span-6 gap-y-8 lg:grid-cols-">
 							<RenderTreatedWebsites websites={websites} />
-							{/*
+
+							<div className="grid grid-cols-1 lg:gap-y-8 lg:pb-3 ">
 								{pendingWebsites.map((item, key) => (
-									<tr
+									<div
 										key={key}
-										className="flex flex-col border-b border-gray-400 border-dashed mb-4 py-2"
+										className="grid grid-cols-2 lg:grid-cols-6 auto-rows-min gap-y-4   lg:gap-x-4 "
 									>
-										<div className="flex flex-row items-center">
-											<p className="w-1/2 text-center tex">{item.name}</p>
-											<div className="w-1/2">
-												<p>status:</p>
-												{renderProgress(item)}
-												<Button
-													title="Cancel"
-													onClick={() => handleCancel(item.id)}
-												/>
-											</div>
+										<p className="bg-chili-500 rounded-l-xl pl-4 lg:hidden">
+											Website
+										</p>
+										<div className="pr-2 flex flex-row justify-left  items-center bg-chili-500 lg:bg-transparent rounded-r-xl">
+											<FontAwesomeIcon icon={faLaptopCode} className="fa-sm" />
+
+											<p className=" pl-2 w-full text-lefts">{item.name}</p>
 										</div>
-									</tr>
-								))} */}
+										<div className="w-full flex items-center col-span-3">
+											{renderProgress(item)}
+										</div>
+										<Button
+											extraStyle=""
+											title="Cancel"
+											onClick={() => handleCancel(item.id)}
+										/>
+									</div>
+								))}
+							</div>
 						</div>
 					</div>
 				)}
