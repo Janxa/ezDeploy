@@ -10,12 +10,18 @@ import VerifyEmail from "./components/VerifyEmail";
 import Dashboard from "./components/Dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import UploadWebsiteForm from "./components/UploadWebsiteForm";
-
+import ColorPalet from "./components/Common/colorpalet";
+import Landing from "./components/Landing";
 const router = createBrowserRouter([
 	{
 		path: "/",
-		element: <App />,
+		element: <Landing />,
 		errorElement: <ErrorPage />,
+	},
+	{
+		path: "app",
+		element: <App />,
+
 		children: [
 			{
 				path: "account",
@@ -38,6 +44,10 @@ const router = createBrowserRouter([
 			{
 				path: "uploader",
 				element: <ProtectedRoute element={<UploadWebsiteForm />} />,
+			},
+			{
+				path: "colors",
+				element: <ColorPalet />,
 			},
 		],
 	},
