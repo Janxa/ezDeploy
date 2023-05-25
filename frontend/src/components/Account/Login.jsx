@@ -57,7 +57,7 @@ function Login(props) {
 		try {
 			const res = await AuthService.login(data["email"], data["password"]);
 			login();
-			navigate("/dashboard");
+			navigate("/app/dashboard");
 		} catch (error) {
 			console.log("Login error:", error);
 			if (error.response.status == 500) {
