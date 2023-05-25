@@ -7,6 +7,7 @@ import Button from "./Common/Button.jsx";
 import LoadingWheel from "./Common/LoadingWheel";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Input from "./Common/Input?jsx";
 
 function UploadWebsiteForm() {
 	const [files, setFiles] = useState(null);
@@ -70,7 +71,7 @@ function UploadWebsiteForm() {
 				uploadResponse.data.task_id
 			);
 			setUploading("done");
-			return navigate("/dashboard");
+			return navigate("/app/dashboard");
 		} catch (e) {
 			console.log("this is the error:", e.response);
 		}
@@ -109,7 +110,7 @@ function UploadWebsiteForm() {
 	return (
 		<form
 			className="flex flex-col w-5/6 mx-auto
-			mt-10 shadow-md h-48 p-4 justify-around bg-color-bg-dark rounded-xl"
+			mt-10 shadow-md min-h-48 p-4 justify-around bg-flat-700 rounded-xl"
 			enctype="multipart/form-data"
 			onSubmit={handleSubmit}
 		>
@@ -127,7 +128,7 @@ function UploadWebsiteForm() {
 			>
 				<label
 					for="file-upload"
-					class={` bg-color-yellow-primary hover:bg-[#FBD974] text-center cursor-pointer
+					class={` bg-chili-500 hover:bg-chili-700 text-center cursor-pointer
 					  text-color-bg-dark-2  font-bold w-1/4  py-2 px-3 rounded-full
 					  ${
 							files || loading
@@ -172,12 +173,14 @@ function UploadWebsiteForm() {
 			>
 				Your website's name :
 			</label>
-			<input
-				type="text"
-				className="input"
+			<Input
 				onChange={handleChange}
 				value={websiteName}
-			></input>
+				type="text"
+				name="website"
+				errors={errors}
+				className="Input"
+			/>
 			{uploading ? (
 				uploading !== "done" ? (
 					<LoadingWheel />
