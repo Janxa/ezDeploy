@@ -7,7 +7,7 @@ function Account() {
 	//resetting state to prevent uncontrolled behaviors
 	window.history.replaceState({}, document.title);
 	let { state } = useLocation();
-	const [disp, setDisp] = useState(state?.disp || "login");
+	const [disp, setDisp] = useState(state);
 
 	useEffect(() => {
 		setDisp(state?.disp || "login");
