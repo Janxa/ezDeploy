@@ -45,8 +45,8 @@ function Menu({ visible, setVisible }) {
 		const { logout } = useContext(AuthContext);
 
 		const handleLogout = () => {
-			logout(); // Call the logout function from the AuthContext
-			AuthService.logout(); // Call the logout function from the AuthService if needed
+			logout();
+			AuthService.logout();
 		};
 		return (
 			<div
