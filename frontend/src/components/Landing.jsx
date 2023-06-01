@@ -23,9 +23,9 @@ function Landing() {
 			{ ref: text, timeout: 500 },
 			{ ref: button, timeout: 600 },
 
-			{ ref: build, timeout: 1500 },
-			{ ref: upload, timeout: 2400 },
-			{ ref: enjoy, timeout: 3100 },
+			{ ref: build, timeout: 1200 },
+			{ ref: upload, timeout: 1700 },
+			{ ref: enjoy, timeout: 2200 },
 		];
 
 		elements.forEach(({ ref, timeout }) => {
@@ -43,25 +43,29 @@ function Landing() {
 	}, []);
 
 	return (
-		<div className="p-4 h-screen grid grid-cols-2 grid-rows-6 max-w-screen ">
+		<div className="p-4 h-screen grid grid-cols-1 md:grid-cols-2 grid-rows-7 max-w-screen ">
 			<h1 className="text-chili-500 text-2xl font-bold col-span-1 ">
 				Ez Deploy
 			</h1>
 			<div
 				ref={text}
-				className="opacity-0 transition-all ease-in-out duration-700  col-span-1  row-start-2 row-end-5  grid grid-rows-6 grid-cols-12"
+				className="opacity-0 transition-all ease-in-out duration-700  col-span-2  md:col-span-1  row-start-2 row-end-3 md:row-end-5  grid md:grid-rows-6 grid-cols-1 md:grid-cols-12"
 			>
-				<h2 className="text-chili-100 text-8xl  col-span-12 col-start-2   font-bold">
+				<h2 className="text-chili-100 text-4xl sm:text-5xl md:text-8xl  col-span-12 col-start-2   font-bold">
 					The app that <b className="text-chili-500">deploys</b> your website in
-					<b className="text-jade-500 block "> 3 clicks</b>
+					<b className="text-jade-500 md:block "> 3 clicks</b>
 				</h2>
 			</div>
-			<div className="  grid col-span-1 row-[span_6_/_span_6] row-start-1  grid-cols-1 grid-rows-7    ">
+			<div
+				className="  grid col-span-1 md:row-[span_6_/_span_6] row-start-3 row-end-5
+			 md:row-start-1  grid-cols-3 grid-rows-1 md:grid-cols-1 md:grid-rows-7    "
+			>
 				<div
 					ref={build}
-					className="opacity-0 transition-all ease-in-out -translate-x-8  duration-700  flex flex-col items-center row-start-2 row-span-2 "
+					className="opacity-0 transition-all ease-in-out -translate-x-8  duration-700 text-center flex flex-col justify-evenly
+					 items-center md:row-start-2 md:row-span-2 "
 				>
-					<p>Build your website</p>
+					<p className="min-h-[3rem] flex items-center">Build your website</p>
 					<div className="bg-chili-500 rounded-full h-24 w-24  p-4 flex items-center cursor-pointer justify-center">
 						<FontAwesomeIcon icon={faComputer} className="fa-2xl scale-110" />
 					</div>
@@ -69,9 +73,9 @@ function Landing() {
 
 				<div
 					ref={upload}
-					className=" opacity-0 transition-all ease-in-out -translate-x-8 duration-700    flex flex-col items-center row-span-2  "
+					className=" opacity-0 transition-all ease-in-out -translate-x-8 duration-700    flex flex-col justify-evenly items-center md:row-span-2  "
 				>
-					<p>Upload It</p>
+					<p className="min-h-[3rem] flex items-center">Upload It</p>
 					<div className="bg-chili-500 rounded-full h-24 w-24 p-4 flex items-center  cursor-pointer justify-center">
 						<FontAwesomeIcon
 							icon={faCloudArrowUp}
@@ -82,9 +86,9 @@ function Landing() {
 
 				<div
 					ref={enjoy}
-					className="opacity-0 transition-all ease-in-out -translate-x-8 duration-700   flex flex-col items-center  row-span-1 "
+					className="opacity-0 transition-all ease-in-out -translate-x-8 duration-700   flex flex-col justify-evenly items-center  md:row-span-1 "
 				>
-					<p>Enjoy</p>
+					<p className="min-h-[3rem] flex items-center">Enjoy</p>
 					<div className="bg-chili-500 rounded-full h-24 w-24 p-4 flex items-center  cursor-pointer justify-center">
 						<FontAwesomeIcon
 							icon={faFaceSmileWink}
@@ -100,7 +104,7 @@ function Landing() {
 			>
 				<Button
 					title="Get Started"
-					extraStyle=" col-span-2 row-span-3 col-start-3  rounded-lg font-medium text-3xl "
+					extraStyle="col-span-4 md:col-span-2 row-span-4 md:row-span-3 col-start-2 md:col-start-3  rounded-lg font-medium text-3xl "
 				/>
 			</div>
 		</div>
