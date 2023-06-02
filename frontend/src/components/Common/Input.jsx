@@ -26,9 +26,8 @@ function Input({
 	pl-8
 	rounded-sm
 	focus:outline-none
-
 	focus:bg-jade-200
-
+	z-10
 	text-flat-800
 	font-medium
     ${!valid && "outline bg-invalid-200 outline-1 outline-invalid-500"}  `;
@@ -47,7 +46,7 @@ function Input({
 
 	return (
 		<div className=" h-full w-full flex flex-col mb-2">
-			<div className="relative w-full h-4/5">
+			<div className="relative  w-full h-4/5">
 				<input
 					className={inputStyle}
 					onChange={onChange}
@@ -57,7 +56,7 @@ function Input({
 					id={id}
 				/>
 				{icon && (
-					<div className="absolute inset-y-0 flex  items-center pl-2  text-flat-800">
+					<div className="absolute  inset-y-0 flex  items-center pl-2  text-flat-800">
 						{icon}
 					</div>
 				)}
