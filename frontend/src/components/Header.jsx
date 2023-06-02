@@ -3,7 +3,7 @@ import Menu from "./Menu";
 function Header() {
 	const [visible, setVisible] = useState(false);
 	return (
-		<header className="flex justify-between py-4 px-5 h-16 md:px-16 shadow-md sticky overflow-visible">
+		<header className="flex justify-between py-4 px-5 h-16 md:px-16 shadow-md absolute top-0 left-0 right-0 overflow-visible">
 			<h1 className="text-chili-500 font-bold text-2xl  ">EZ hosting</h1>
 
 			<button
