@@ -37,6 +37,7 @@ def create_app():
     app.before_request(check_csrf_token)
     db.init_app(app)
     mail.init_app(app)
+
     with app.app_context():
         db.create_all()
         Session = sessionmaker(bind=db.engine,autoflush=True)
@@ -48,24 +49,9 @@ def create_app():
     app.register_blueprint(websites)
     from backend.authentification import authentification
     app.register_blueprint(authentification)
+    from backend.contact import contact
+    app.register_blueprint(contact)
 
-
-    if app.debug:
-        @app.route("/")
-        def hello_world():
-
-                return (f""" <html>
-                            <head>
-                            <title></title>
-                            </head>
-                            <body>
-                            <form action="/websites/upload/" method="post" enctype="multipart/form-data">
-                            Type Folder Name:<input type="text" name="foldername" /><br/><br/>
-                            Select Folder to Upload: <input type="file" name="files" id="files" multiple directory="" webkitdirectory="" moxdirectory="" /><br/><br/>
-                            <input type="Submit" value="Upload" name="upload" />
-                            </form>
-                            </body>
-                            </html>""")
 
 
     return app
