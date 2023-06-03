@@ -1,6 +1,6 @@
 from flask_mail import Mail, Message
 from flask import current_app, make_response
-
+from ..extensions import mail
 def send_email(mail_content,object,mail_sender):
     email_object = f"New e-mail from {app_config.DOMAIN_NAME}'s contact form !"
     try:
