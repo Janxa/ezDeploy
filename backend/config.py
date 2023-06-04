@@ -40,6 +40,8 @@ class Config:
 
     CELERY_BROKER_URL = os.environ.get('REDIS_URL') or 'redis://127.0.0.1:6379/0'
 
+    DOMAIN_NAME =os.environ.get('DOMAIN_NAME')
+
     # Result backend settings
     CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
 
