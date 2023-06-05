@@ -13,6 +13,11 @@ const contact_schema = Joi.object({
 		"string.min": "Your email must be at least 20 characters long",
 		"string.empty": "Your message can't be empty",
 	}),
+	mail_sender_name: Joi.string().min(3).max(45).required().messages({
+		"string.max": "Your name cant exceed 45 characters",
+		"string.min": "Your email must be at least 3 characters long",
+		"string.name": "Please Insert a name or nickname",
+	}),
 });
 
 export { contact_schema };
