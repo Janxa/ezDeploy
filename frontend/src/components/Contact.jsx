@@ -15,6 +15,12 @@ function Contact() {
 	const [errors, setErrors] = useState({});
 	const schema = contact_schema;
 
+	const [mail_service, mail_template, mail_key] = [
+		import.meta.env.VITE_MAIL_SERVICE,
+		import.meta.env.VITE_MAIL_TEMPLATE,
+		import.meta.env.VITE_MAIL_KEY,
+	];
+
 	const sendEmail = async (event) => {
 		event.preventDefault();
 		let new_errors = {};
@@ -33,12 +39,7 @@ function Contact() {
 				{ abortEarly: false }
 			);
 			const res = await toast.promise(
-				emailjs.send(
-					"service_jkvd93b",
-					"template_z092du8",
-					templateParams,
-					"SImZGb9QNPu43b5oe"
-				),
+				emailjs.send(mail_service, mail_template, templateParams, mail_key),
 				{
 					pending: "Loading",
 					success: "📧 Your email has been sent !",
