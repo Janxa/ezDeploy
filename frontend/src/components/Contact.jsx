@@ -2,34 +2,54 @@ import React from "react";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { contact_schema } from "../joi_schemas/contact_schema";
-import axios from "axios";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../../styles/react-toastify-custom.css";
 import Input from "./Common/Input";
 import Button from "./Common/Button";
+import emailjs from "@emailjs/browser";
 function Contact() {
 	const [mail_sender, setmail_sender] = useState("");
 	const [mail_content, setmail_content] = useState("");
+	const [mail_sender_name, setMail_sender_name] = useState("");
 	const [errors, setErrors] = useState({});
 	const schema = contact_schema;
 
 	const sendEmail = async (event) => {
-		let new_errors = {};
 		event.preventDefault();
+		let new_errors = {};
+		let templateParams = {
+			mail_sender: mail_sender,
+			mail_sender_name: mail_sender_name,
+			mail_content: mail_content,
+		};
 		try {
 			await schema.validateAsync(
-				{ mail_sender: mail_sender, mail_content: mail_content },
+				{
+					mail_sender: mail_sender,
+					mail_content: mail_content,
+					mail_sender_name: mail_sender_name,
+				},
 				{ abortEarly: false }
 			);
 			const res = await toast.promise(
-				axios.post("/api/contact/send", { mail_content, mail_sender }),
+				emailjs.send(
+					"service_jkvd93b",
+					"template_z092du8",
+					templateParams,
+					"SImZGb9QNPu43b5oe"
+				),
 				{
 					pending: "Loading",
 					success: "📧 Your email has been sent !",
 					error: "🤯 Error, could not send email ",
-				}
+				},
+				{ theme: "dark" }
 			);
 			console.log(res);
 			setmail_sender("");
 			setmail_content("");
+			setMail_sender_name("");
 		} catch (err) {
 			console.log(err);
 			err.details.forEach(
@@ -45,6 +65,19 @@ function Contact() {
 	});
 	return (
 		<main className="mt-28 md:mt-32 w-11/12 m-auto flex  flex-col">
+			<ToastContainer
+				position="top-right"
+				autoClose={5000}
+				hideProgressBar={false}
+				newestOnTop={false}
+				closeOnClick
+				rtl={false}
+				pauseOnFocusLoss
+				draggable
+				pauseOnHover
+				theme="light"
+			/>
+
 			<h2 className="bg-flat-700  w-4/5 md:w-1/2 lg:w-11/12 mx-auto text-2xl p-2 font-bold text-center  shadow-md rounded-md m-2">
 				Contact
 			</h2>
@@ -56,6 +89,18 @@ function Contact() {
 					Any question ? Send me an e-mail through this form and i'll answer you
 					asap !
 				</p>
+				<label for="mail_sender" title="So I can answer your mail !">
+					Your name :
+				</label>
+				<Input
+					className={errors["mail_sender_name"] ? "input-invalid" : "input"}
+					type="text"
+					name="username"
+					id="mail_sender_name"
+					value={mail_sender_name}
+					onChange={(e) => setMail_sender_name(e.target.value)}
+					errors={errors["mail_sender_name"]}
+				/>
 				<label for="mail_sender" title="So I can answer your mail !">
 					Your email adress :
 				</label>
