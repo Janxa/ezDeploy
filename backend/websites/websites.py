@@ -3,12 +3,13 @@ from flask_jwt_extended import jwt_required,get_jwt_identity
 from ..config import Config
 from .services import validate_all_files,create_error_json,extract_files_from_zip
 from operator import itemgetter
-from ..database.database import CreateWebsite, GetAllWebsites,FindWebsiteById,UpdateWebsiteCancelled, DeleteWebsiteById
-from ..tasks.upload import upload_to_s3
+from ..database.database import UpdateWebsiteTask,FindUser, CreateWebsite, GetAllWebsites,FindWebsiteById,UpdateWebsiteCancelled, DeleteWebsiteById
+from ..tasks.upload import upload_to_s3_demo
 from ..tasks.revoke import revoke_task
 from backend.extensions.aws_s3 import s3
-from backend.errors import ErrorList
+from backend.errors import ErrorList,UserNotFoundError
 import base64
+
 websites=Blueprint('websites',__name__, url_prefix="/api/websites")
 
 @websites.route("/upload",methods=['POST'])
@@ -16,6 +17,11 @@ websites=Blueprint('websites',__name__, url_prefix="/api/websites")
 def uploading():
         user_id = get_jwt_identity()
 
+        try:
+                user=FindUser(user_id=user_id)
+        except UserNotFoundError as e:
+                err=str(e)
+                return make_response({"error":err},404)
         name = str(request.form["website_name"])
         zipfile = request.files['file']
         print(zipfile, type(zipfile))
@@ -26,12 +32,25 @@ def uploading():
                 return make_response(error_json,400)
         decoded_files = []
         for f in files:
-                  file_content = base64.b64encode(f.read()).decode('utf-8')
-                  filename = f.filename
-                  decoded_files.append({'filename': filename, 'file_content': file_content})
-       #later, make it so that task is called only once the db changes are commited, then update task in db to avoid unavailable website in the task
-        task = upload_to_s3.delay(user_id, name, decoded_files)
-        CreateWebsite(user_id,name,task.id)
+                file_content = base64.b64encode(f.read()).decode('utf-8')
+                filename = f.filename
+                content_type = f.content_type
+
+                decoded_files.append({
+                        'filename': filename,
+                        'file_content': file_content,
+                        'content_type': content_type
+                })
+
+        print("user!=premium")
+        website=CreateWebsite(user_id,name)
+        print("website created in db", website.name)
+        print(f"User {user.username} is {'not ' if not user.premium else ''}premium")
+        task = upload_to_s3_demo.delay(user_id, name, decoded_files,user.premium)
+        print("task created", task.id)
+
+        UpdateWebsiteTask(website,task.id)
+        print("task",task.id, "added to ",website.name,"'s task_id column")
         return make_response({"task_id":task.id,"website_name":name},200)
 
 @websites.route("/cancel",methods=['DELETE'])
