@@ -44,7 +44,7 @@ from celery import shared_task
 #Debuggin version
 
 @shared_task(bind=True)
-def upload_to_s3(self,user_id, name, files):
+def upload_to_s3_demo(self,user_id, name, files):
     with current_app.app_context():
         Session=current_app.extensions["Session"]
         session = Session()
