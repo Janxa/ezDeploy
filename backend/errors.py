@@ -55,4 +55,7 @@ class FileTooLargeError(Exception):
         return self.message
 
 class WebsiteNotFoundError(Exception):
-        pass
+    pass
+
+class UserNotFoundError(Exception):
+    pass
