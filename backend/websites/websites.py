@@ -30,13 +30,13 @@ def uploading():
         except ErrorList as errors:
                 error_json=create_error_json(errors.get_list())
                 return make_response(error_json,400)
-        decoded_files = []
+        encoded_files = []
         for f in files:
                 file_content = base64.b64encode(f.read()).decode('utf-8')
                 filename = f.filename
                 content_type = f.content_type
 
-                decoded_files.append({
+                encoded_files.append({
                         'filename': filename,
                         'file_content': file_content,
                         'content_type': content_type
@@ -46,7 +46,7 @@ def uploading():
         website=CreateWebsite(user_id,name)
         print("website created in db", website.name)
         print(f"User {user.username} is {'not ' if not user.premium else ''}premium")
-        task = upload_to_s3_demo.delay(user_id, name, decoded_files,user.premium)
+        task = upload_to_s3_demo.delay(user_id, name, encoded_files,user.premium)
         print("task created", task.id)
 
         UpdateWebsiteTask(website,task.id)
