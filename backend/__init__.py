@@ -49,8 +49,7 @@ def create_app():
     app.register_blueprint(websites)
     from backend.authentification import authentification
     app.register_blueprint(authentification)
-    from backend.contact import contact
-    app.register_blueprint(contact)
+
 
 
 
