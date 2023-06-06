@@ -11,15 +11,7 @@ from .. import db
 from flask import current_app
 # from sqlalchemy.orm import scoped_session, sessionmaker
 from celery import shared_task
-
-
-# @celery.signals.worker_init.connect
-# def initialize_session():
-#     some_engine = create_engine('database_url')
-#     Session.configure(bind=some_engine)
-
-
-
+import base64
 # @celery.task
 # def upload_to_s3(user_id, name, files):
 
@@ -44,39 +36,41 @@ from celery import shared_task
 #Debuggin version
 
 @shared_task(bind=True)
-def upload_to_s3_demo(self,user_id, name, files):
+def upload_to_s3_demo(self,user_id, name, files,premium):
     with current_app.app_context():
         Session=current_app.extensions["Session"]
         session = Session()
-        print("session", session)
-        print("task recieved")
-        print(self.request.id)
-
         website = session.query(Websites).filter_by(task=self.request.id).first()
         if website is None:
              raise WebsiteNotFoundError(f"Website with ID {self.request.id} not found.")
-        print(website)
         try:
             bucket_name = Config.bucket_name
-            index = None
             i=0
             for file_data in files:
-                if website.cancelled:
-                    break
-                time.sleep(0.4)
-                i+=1
-                file_content, file_name = file_data["file_content"], file_data["filename"]
-                file_name = f"{user_id}/{name}/{file_name}"
-                self.update_state(state='PROGRESS',
-                                    meta={'current': file_name,
-                                        'index': i,
-                                        'total':len(files),
-                                        'current_status': f'uploading {file_name} ({i}/{len(files)})' })
-                print('finished processing', file_name)
+                    if website.cancelled:
+                        break
+                    if not premium:
+                        time.sleep(1)
+                    i+=1
+                    file_content_base64, file_name,content_type = file_data["file_content"], file_data["filename"],file_data["content_type"]
+                    file_name = f"{user_id}/{name}/{file_name}"
+                    self.update_state(state='PROGRESS',
+                                        meta={'current': file_name,
+                                            'index': i,
+                                            'total':len(files),
+                                            'current_status': f'uploading {file_name} ({i}/{len(files)})' })
+                    file_content = base64.b64decode(file_content_base64)
+                    if file_name.endswith("/index.html"):
+                        print("index found")
+                        if premium:
+                            index_link = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
+                            s3.Bucket(bucket_name).put_object(Key=file_name, Body=file_content, ContentType=content_type)
+                        else:
+                            index_link="You have a restrained account (see About section)"
+                    else:
+                        if premium:
+                            s3.Bucket(bucket_name).put_object(Key=file_name, Body=file_content,  ContentType=content_type or 'application/octet-stream')
 
-                if file_name.endswith("/index.html"):
-                    print("index found")
-                    index_link = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
             if not website.cancelled:
                 try:
                     print("website => ", website)
