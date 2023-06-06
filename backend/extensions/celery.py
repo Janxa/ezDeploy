@@ -1,33 +1,15 @@
-# from celery import Celery
-# import flask
-# class FlaskCelery(Celery):
+from celery import Celery,Task
+from flask import Flask
 
-#     def __init__(self, *args, **kwargs):
+def celery_init_app(app: Flask) -> Celery:
+    class FlaskTask(Task):
+        def __call__(self, *args: object, **kwargs: object) -> object:
+            with app.app_context():
+                return self.run(*args, **kwargs)
 
-#         super(FlaskCelery, self).__init__(*args, **kwargs)
-#         self.patch_task()
+    celery_app = Celery(app.name, task_cls=FlaskTask)
+    celery_app.config_from_object(app.config, namespace='CELERY')
+    celery_app.set_default()
+    app.extensions["celery"] = celery_app
+    return celery_app
 
-#         if 'app' in kwargs:
-#             self.init_app(kwargs['app'])
-
-#     def patch_task(self):
-#         TaskBase = self.Task
-#         _celery = self
-
-#         class ContextTask(TaskBase):
-#             abstract = True
-
-#             def __call__(self, *args, **kwargs):
-#                 if flask.has_app_context():
-#                     return TaskBase.__call__(self, *args, **kwargs)
-#                 else:
-#                     with _celery.app.app_context():
-#                         return TaskBase.__call__(self, *args, **kwargs)
-
-#         self.Task = ContextTask
-
-#     def init_app(self, app):
-#         self.app = app
-#         self.config_from_object(app.config)
-
-# celery = FlaskCelery()
