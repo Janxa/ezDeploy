@@ -3,7 +3,7 @@ import secrets
 import hashlib
 from datetime import datetime,timedelta
 import os
-from ..errors import WebsiteNotFoundError
+from ..errors import WebsiteNotFoundError,UserNotFoundError
 import base64
 
 
@@ -11,11 +11,16 @@ import base64
 def FindUser(email=False,user_id=False):
     if email:
         user = Users.query.filter_by(email=email).first()
+        if not user:
+            raise UserNotFoundError()
         return user
     if user_id:
         print("Finding :",user_id)
         user = Users.query.filter_by(id=user_id).first()
         print("user found :",user)
+        if not user:
+            raise UserNotFoundError()
+
         return user
 
 
