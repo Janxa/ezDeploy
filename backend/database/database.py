@@ -15,12 +15,9 @@ def FindUser(email=False,user_id=False):
             raise UserNotFoundError()
         return user
     if user_id:
-        print("Finding :",user_id)
         user = Users.query.filter_by(id=user_id).first()
-        print("user found :",user)
         if not user:
             raise UserNotFoundError()
-
         return user
 
 
@@ -88,13 +85,13 @@ def GenerateVerificationToken(user):
     print("hashed token",hashed_token)
     return token
 
-def CreateWebsite(user_id,name,task_id):
+def CreateWebsite(user_id,website_name):
     print(user_id)
     user=FindUser(user_id=user_id)
     if not user:
         raise Exception(({"message": "User not found", "code": 404}))
     website_id=generate_id()
-    website=Websites(id=website_id,user_id=user_id, name=name,task=task_id)
+    website=Websites(id=website_id,user_id=user_id, name=website_name)
     db.session.add(website)
     db.session.commit()
     print("Website added : ",website)
@@ -105,11 +102,11 @@ def UpdateWebsiteStatus(website, status ,session=None):
     session.commit()
     return website
 
-def UpdateWebsiteTask(website, task, session=None):
+def UpdateWebsiteTask(website, task_id, session=None):
     if not session:
         session=db.session
     try:
-        website.task = task
+        website.task = task_id
         session.commit()
     except Exception as e:
         session.rollback()
