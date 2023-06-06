@@ -19,7 +19,7 @@ function Menu({ visible, setVisible }) {
 						<Link
 							onClick={() => setVisible(!visible)}
 							className="p-2 mx-1 rounded-md bg-chili-500"
-							to="/app/account"
+							to="account"
 							state={{ disp: "login" }}
 						>
 							Login
@@ -27,7 +27,7 @@ function Menu({ visible, setVisible }) {
 						<Link
 							onClick={() => setVisible(!visible)}
 							className="p-2 mx-1 rounded-md bg-chili-500"
-							to="/app/account"
+							to="account"
 							state={{ disp: "register" }}
 						>
 							Register
