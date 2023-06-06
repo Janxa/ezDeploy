@@ -9,7 +9,7 @@ class Users(db.Model):
     email = db.Column(db.String(255),unique=True, nullable=False)
     password=db.Column(db.String(255), nullable=False)
     validated =db.Column(db.Boolean,unique=False,nullable=False,default=False)
-
+    premium=db.Column(db.Boolean,unique=False,nullable=False,default=False)
     verification_token = db.relationship('VerificationTokens', uselist=False, back_populates='user')
     websites=db.relationship('Websites',uselist=False, back_populates='user')
 
