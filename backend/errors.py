@@ -58,4 +58,5 @@ class WebsiteNotFoundError(Exception):
     pass
 
 class UserNotFoundError(Exception):
-    pass
+      def __str__(self):
+       return  "User Not found"
