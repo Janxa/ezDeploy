@@ -10,7 +10,7 @@ function Menu({ visible, setVisible }) {
 			<div
 				className={
 					visible
-						? "flex flex-col bg-flat-700 items-center absolute top-16 left-0 w-full h-screen z-50 md:flex-row md:flex md:w-2/3 md:justify-between  md:font-medium md:static md:h-full pt-4 md:pt-0"
+						? "flex flex-col bg-flat-700 md:bg-flat-800 items-center absolute top-16 left-0 w-full h-screen z-50 md:flex-row md:flex md:w-2/3 md:justify-between  md:font-medium md:static md:h-full pt-4 md:pt-0"
 						: "hidden md:flex md:w-2/3 md:justify-between   md:font-medium "
 				}
 			>
