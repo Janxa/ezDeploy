@@ -34,8 +34,12 @@ function Menu({ visible, setVisible }) {
 						</Link>
 					</li>
 					<li></li>
-					<li>About</li>
-					<li>Contact</li>
+					<li className="flex mb-4 md:mb-0  basis-1/4 w-1/2 md:w-auto justify-around self-center">
+						<Link to="about">About</Link>
+					</li>{" "}
+					<li className="flex mb-4 md:mb-0  basis-1/4 w-1/2 md:w-auto justify-around self-center">
+						<Link to="contact">Contact</Link>
+					</li>
 				</ul>
 			</div>
 		);
@@ -69,8 +73,8 @@ function Menu({ visible, setVisible }) {
 						</Link>
 					</li>
 					<li>Hello {user}</li>
-					<li>About</li>
-					<li>Contact</li>
+					<Link to="about">About</Link>
+					<Link to="contact">Contact</Link>
 				</ul>
 			</div>
 		);
