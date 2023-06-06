@@ -12,6 +12,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UploadWebsiteForm from "./components/UploadWebsiteForm";
 import ColorPalet from "./components/Common/colorpalet";
 import Landing from "./components/Landing";
+import Contact from "./components/Contact";
+import About from "./components/About";
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -40,6 +42,14 @@ const router = createBrowserRouter([
 			{
 				path: "dashboard/*",
 				element: <ProtectedRoute element={<Dashboard />} />,
+			},
+			{
+				path: "contact",
+				element: <Contact />,
+			},
+			{
+				path: "about",
+				element: <About />,
 			},
 			{
 				path: "uploader",
