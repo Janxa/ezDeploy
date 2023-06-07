@@ -8,7 +8,7 @@ import LoadingWheel from "./Common/LoadingWheel";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Input from "./Common/Input?jsx";
-
+import { redirect } from "react-router-dom";
 function UploadWebsiteForm() {
 	const [files, setFiles] = useState(null);
 	const [fileErrors, setFileErrors] = useState(false);
@@ -17,6 +17,7 @@ function UploadWebsiteForm() {
 	const [loading, setLoading] = useState(false);
 	const [uploading, setUploading] = useState(false);
 	const [websiteName, setWebsitename] = useState("");
+
 	let navigate = useNavigate();
 	const handleFileUpload = async (event) => {
 		setFileErrors(false);
@@ -90,7 +91,17 @@ function UploadWebsiteForm() {
 			return navigate("/app/dashboard");
 		} catch (e) {
 			console.log(e);
-			console.log("this is the error:", e.response);
+			if (e.code == "ERR_NETWORK" || e.response.status == 400)
+				return navigate("/app/account", {
+					state: { error: "Session expired, please reconnect" },
+				});
+			else if (e.response.status == 500)
+				return navigate("/app/account", {
+					state: {
+						error:
+							"Server not available, please try again later or contact an admin",
+					},
+				});
 		}
 	};
 
