@@ -15,7 +15,6 @@ function Login(props) {
 	const [errors, setErrors] = useState({});
 	const [emailSent, setEmailSent] = useState(false);
 	const { login } = useContext(AuthContext);
-	const { isLoggedIn } = useContext(AuthContext);
 	const schema = loginSchema;
 	const navigate = useNavigate();
 
