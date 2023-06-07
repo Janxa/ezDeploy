@@ -64,7 +64,7 @@ function Menu({ visible, setVisible }) {
 					<li className="flex mb-4 md:mb-0  basis-1/4 w-1/2 md:w-auto justify-around self-center">
 						<Link
 							onClick={handleLogout}
-							to={"/account"}
+							to={"account"}
 							className="p-2 mx-1 rounded-md bg-chili-500 font-semibold"
 							state={{ disp: "login" }}
 							title="Logout"
