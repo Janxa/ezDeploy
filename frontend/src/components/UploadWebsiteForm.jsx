@@ -5,33 +5,49 @@ import exctractZipFile from "../services/zip.service";
 import WebsiteService from "../services/websites.service";
 import Button from "./Common/Button.jsx";
 import LoadingWheel from "./Common/LoadingWheel";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Input from "./Common/Input?jsx";
 
 function UploadWebsiteForm() {
 	const [files, setFiles] = useState(null);
-	const [errors, setErrors] = useState(false);
+	const [fileErrors, setFileErrors] = useState(false);
+	const [zipFileName, setZipFileName] = useState(false);
+	const [nameErrors, setNameErrors] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [uploading, setUploading] = useState(false);
 	const [websiteName, setWebsitename] = useState("");
 	let navigate = useNavigate();
 	const handleFileUpload = async (event) => {
-		setErrors(false);
+		setFileErrors(false);
+		setFiles(false);
+		setZipFileName(false);
+
 		const zipFile = event.target.files[0];
+		setZipFileName(zipFile.name);
 		console.log(typeof zipFile);
 		console.log(zipFile);
 		setLoading(true);
-		const file_list = await exctractZipFile(zipFile);
-		let numberOfIndex = 0;
-		const fileValidationFunctions = [
-			validateFilenames,
-			validateExtensions,
-			validateSize,
-		];
 
+		let file_list = [];
+		try {
+			file_list = await exctractZipFile(zipFile);
+		} catch (error) {
+			console.log("error");
+			setFileErrors("File type not supported: must be a .zip file");
+			setLoading(false);
+			setFiles(null);
+			throw error;
+		}
 		// Validate all files
 		try {
+			console.log("second try");
+			let numberOfIndex = 0;
+			const fileValidationFunctions = [
+				validateFilenames,
+				validateExtensions,
+				validateSize,
+			];
 			for (let i = 0; i < file_list.length; i++) {
 				const file = file_list[i];
 				for (let j = 0; j < fileValidationFunctions.length; j++) {
@@ -48,8 +64,8 @@ function UploadWebsiteForm() {
 				throw new Error(`The zipfile must one, and only one index.html file`);
 		} catch (error) {
 			// Handle validation errors
-
-			setErrors(error);
+			console.log(error);
+			setFileErrors(error.message);
 		} finally {
 			setLoading(false);
 		}
@@ -73,6 +89,7 @@ function UploadWebsiteForm() {
 			setUploading("done");
 			return navigate("/app/dashboard");
 		} catch (e) {
+			console.log(e);
 			console.log("this is the error:", e.response);
 		}
 	};
@@ -110,7 +127,7 @@ function UploadWebsiteForm() {
 	return (
 		<form
 			className="flex flex-col w-5/6 mx-auto
-			mt-10 shadow-md min-h-48 p-4 justify-around bg-flat-700 rounded-xl"
+			mt-24 shadow-md min-h-48 p-4 justify-around bg-flat-700 rounded-xl"
 			enctype="multipart/form-data"
 			onSubmit={handleSubmit}
 		>
@@ -128,8 +145,8 @@ function UploadWebsiteForm() {
 			>
 				<label
 					for="file-upload"
-					class={` bg-chili-500 hover:bg-chili-700 text-center cursor-pointer
-					  text-color-bg-dark-2  font-bold w-1/4  py-2 px-3 rounded-full
+					class={` bg-chili-500 hover:bg-chili-700 text-center text-sm sm:text-base cursor-pointer
+					  text-color-bg-dark-2  font-bold w-2/4 sm:w-1/4 mt-4  py-2 px-3 rounded-full
 					  ${
 							files || loading
 								? "-translate-x-1/3 transition-all ease-in-out duration-700"
@@ -141,18 +158,28 @@ function UploadWebsiteForm() {
 				<div
 					className={
 						files || loading
-							? "translate-x-1/3 transition-all ease-in-out duration-700 w-1/4"
-							: "opacity-0 "
+							? "opacity-100 translate-x-1/3 transition-all mt-4 ease-in-out duration-700 w-1/4"
+							: "-translate-x-1/3 opacity-0 "
 					}
 				>
-					{files && !loading ? (
-						<p>
-							{files.name}{" "}
-							<FontAwesomeIcon
-								className="ml-2 text-color-green-primary"
-								icon={faCheck}
-							/>
-						</p>
+					{zipFileName && !loading ? (
+						fileErrors ? (
+							<p className=" ">
+								{zipFileName}
+								<FontAwesomeIcon
+									className="ml-2 text-invalid-500"
+									icon={faTimes}
+								/>
+							</p>
+						) : (
+							<p>
+								{zipFileName}
+								<FontAwesomeIcon
+									className="ml-2 text-jade-500"
+									icon={faCheck}
+								/>
+							</p>
+						)
 					) : (
 						false
 					)}
@@ -166,7 +193,9 @@ function UploadWebsiteForm() {
 					onChange={handleFileUpload}
 				/>
 			</div>
-
+			<p className="my-4 text-center text-invalid-500 font-medium w-1/2 mx-auto">
+				{fileErrors}
+			</p>
 			<label
 				className="text-xl font-bold text-color-yellow-primary"
 				htmlFor="file-upload"
@@ -178,7 +207,7 @@ function UploadWebsiteForm() {
 				value={websiteName}
 				type="text"
 				name="website"
-				errors={errors}
+				errors={nameErrors}
 				className="Input"
 			/>
 			{uploading ? (
@@ -195,7 +224,7 @@ function UploadWebsiteForm() {
 				)
 			) : (
 				<Button
-					disabled={files || errors ? false : true}
+					disabled={!files || fileErrors || nameErrors ? true : false}
 					type="submit"
 					title="Upload Files"
 				/>
