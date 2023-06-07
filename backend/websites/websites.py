@@ -23,6 +23,10 @@ def uploading():
                 err=str(e)
                 return make_response({"error":err},404)
         name = str(request.form["website_name"])
+        if name==None or name=="":
+                return make_response({"error":"Website name can't be empty"},400)
+        if len(name)<4:
+                return make_response({"error":"Website name too short"},400)
         zipfile = request.files['file']
         print(zipfile, type(zipfile))
         files=extract_files_from_zip(zipfile)
