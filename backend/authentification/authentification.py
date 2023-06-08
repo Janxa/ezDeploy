@@ -43,7 +43,7 @@ def verify_user(token):
         user = ValidateToken(token)
     except Exception as e:
         print(e)
-        return make_response(jsonify({'Error':"The verification code is incorrect."}),401)
+        return make_response(jsonify({'Error':"The verification code is incorrect."}),400)
     if user == False:
         return make_response("Email has already been validated",200)
     return make_response("Email successfully validated",200)
