@@ -87,7 +87,7 @@ def upload_to_s3_demo(self,user_id, name, files,premium):
         except:
             try:
                 if not website.cancelled:
-                    UpdateWebsiteStatus(website.id,"failure")
+                    UpdateWebsiteStatus(website,"failure")
                 else:
                     revoke_task(self.request.id,website.id)
             except PendingRollbackError:
