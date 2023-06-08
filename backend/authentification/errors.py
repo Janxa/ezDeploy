@@ -4,3 +4,5 @@ class VerificationError(exceptions.VerifyMismatchError):
     pass
 class UserNotFoundError(Exception):
     pass
+class LoginError(Exception):
+    pass
