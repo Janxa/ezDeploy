@@ -10,7 +10,7 @@ from .services import register_user,login,generate_email_validation_token
 from flask_jwt_extended import (create_access_token,
                                 jwt_required,
                                 set_access_cookies)
-
+from .errors import LoginError
 
 authentification=Blueprint('authentification',__name__, url_prefix="/api/authentification")
 
@@ -60,10 +60,9 @@ def login_user():
         csrf_token=secrets.token_hex(16)
         access_token = create_access_token(identity=user.id, additional_claims={'csrf':csrf_token})
 
-    except UserNotFoundError as e :
+    except LoginError as e :
         return make_response(jsonify({"error":"Wrong Email or Password"}),401)
-    except VerificationError as e:
-        return make_response(jsonify({"error":"Wrong Email or Password"}),401)
+
     except Exception as e:
         print("error",e)
         return make_response(jsonify({"error":"Unexpected Error"}),500)
