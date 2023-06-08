@@ -4,10 +4,11 @@ from ..config import Config
 from .services import validate_all_files,create_error_json,extract_files_from_zip
 from operator import itemgetter
 from ..database.database import UpdateWebsiteTask,FindUser, CreateWebsite, GetAllWebsites,FindWebsiteById,UpdateWebsiteCancelled, DeleteWebsiteById
+from ..database.errors import UserNotFoundError
 from ..tasks.upload import upload_to_s3_demo
 from ..tasks.revoke import revoke_task
 from backend.extensions.aws_s3 import s3
-from backend.errors import ErrorList,UserNotFoundError
+from .errors import ErrorList
 import base64
 
 websites=Blueprint('websites',__name__, url_prefix="/api/websites")
