@@ -16,13 +16,7 @@ def stream_task(task_id):
                #           print("pending,",{task.state},{task})
                #           yield f'data: {{"state":{task.state},"current": {task.info},"index": none,"total":"calculating...","current_status": "pending" }}\n\n'
                time.sleep(1)
-               print("not pending")
-               print("task:",task)
-               print("task state",task.state)
-               print(task.ready())
-               print(task.failed())
-               print(task.successful)
-               print(task.info)
+
                while not task.ready():
                     data = {'task_id': task.id, 'state': task.status, 'info': task.info}
                     response_data = json.dumps(data)
@@ -40,7 +34,6 @@ def stream_task(task_id):
                     response_data = json.dumps(data)
                     yield f'data: {response_data} \n\n'
                     yield f'event: CLOSE\ndata: {response_data} \n\n'
-     print(current_app)
      celery=current_app.extensions["celery"]
 
      response=Response(get_data(celery),mimetype='text/event-stream')
