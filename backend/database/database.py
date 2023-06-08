@@ -97,14 +97,16 @@ def CreateWebsite(user_id,website_name):
     print("Website added : ",website)
     return website
 
-def UpdateWebsiteStatus(website, status ,session=None):
+def UpdateWebsiteStatus(website, status):
+    session=db.session
+
     website.status=status
     session.commit()
     return website
 
-def UpdateWebsiteTask(website, task_id, session=None):
-    if not session:
-        session=db.session
+def UpdateWebsiteTask(website, task_id):
+
+    session=db.session
     try:
         website.task = task_id
         session.commit()
@@ -113,9 +115,9 @@ def UpdateWebsiteTask(website, task_id, session=None):
         raise e
     return website
 
-def UpdateWebsiteLink(website, link, session=None):
-    if not session:
-        session=db.session
+def UpdateWebsiteLink(website, link):
+    session=db.session
+
     try:
         website.link = link
 
