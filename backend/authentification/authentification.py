@@ -11,7 +11,6 @@ from flask_jwt_extended import (create_access_token,
                                 jwt_required,
                                 set_access_cookies)
 from .errors import LoginError
-
 authentification=Blueprint('authentification',__name__, url_prefix="/api/authentification")
 
 @authentification.route("/register",methods=['POST'])
@@ -69,5 +68,10 @@ def login_user():
 
     response=make_response(jsonify({'username':user.username}),200)
     set_access_cookies(response,access_token)
-    response.set_cookie('csrf_access_token', value=csrf_token,httponly=False)
+    response.set_cookie('csrf_access_token', value=csrf_token, httponly=False)
     return response
+
+
+
+
+
