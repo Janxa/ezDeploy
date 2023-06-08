@@ -138,8 +138,7 @@ def GetAllWebsites(user_id):
 
 def DeleteWebsiteById(website_id):
     website = Websites.query.get(website_id)
-    if website is None:
-        raise WebsiteNotFoundError(f"Website with ID {id} not found.")
+    if not website :return
     print("deleting",website.name)
     db.session.delete(website)
     print("deleted !")
