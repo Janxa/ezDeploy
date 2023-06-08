@@ -1,14 +1,15 @@
 from argon2 import PasswordHasher,exceptions
 from flask_mail  import Message
 from backend import mail
-from backend.authentification.errors import UserNotFoundError,VerificationError
-from backend.database.database import FindUser,CreateUser,GenerateVerificationToken
+from .errors import LoginError
+import backend.database as db
 from flask import current_app
 import re
+
 ph = PasswordHasher()
 
 def register_user(username,email,password,):
-    user = FindUser(email=email)
+    user = db.FindUser(email=email)
     if user:
         raise Exception({"message": "Email already used", "code": 409})
     pattern = re.compile("^[ a-zA-Z0-9!@#$%^&*()_+\-=\[\\]'\"{};:,.<>\/?]+$")
@@ -16,13 +17,13 @@ def register_user(username,email,password,):
         raise Exception({"message": "Password contains forbidden characters", "code": 400})
 
     hashed_password = hash_password(password)
-    user=CreateUser(username,email,hashed_password)
+    user=db.CreateUser(username,email,hashed_password)
     generate_email_validation_token(user)
 
 def generate_email_validation_token(user):
     if user.validated:
         raise Exception({"message": "Email already validated", "code": 409})
-    token = GenerateVerificationToken(user)
+    token = db.GenerateVerificationToken(user)
     send__confirmation_email(user.username,user.email,token)
 
 
@@ -34,16 +35,12 @@ def hash_password(password):
     return hash
 
 def login(email, password):
-    user = FindUser(email=email)
-    if user is None:
-        raise UserNotFoundError("User not found")
-
-    hash = user.password
     try:
+        user = db.FindUser(email=email)
+        hash = user.password
         ph.verify(hash, password)
-    except exceptions.VerifyMismatchError as e:
-        print(type(e))
-        raise VerificationError("Incorrect password")
+    except (db.UserNotFoundError , exceptions.VerifyMismatchError)  as e :
+            raise LoginError()
     return user
     # if ph.check_needs_rehash(hash):
     #      db.set_password_hash_for_user(user, ph.hash(password))
