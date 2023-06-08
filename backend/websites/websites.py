@@ -5,8 +5,9 @@ from .services import validate_all_files,create_error_json,extract_files_from_zi
 from operator import itemgetter
 from ..database.database import UpdateWebsiteTask,FindUser, CreateWebsite, GetAllWebsites,FindWebsiteById,UpdateWebsiteCancelled, DeleteWebsiteById
 from ..database.errors import UserNotFoundError
-from ..tasks.upload import upload_to_s3_demo
+from ..tasks.upload import upload_to_s3
 from ..tasks.revoke import revoke_task
+from ..tasks.delete import delete_from_s3
 from backend.extensions.aws_s3 import s3
 from .errors import ErrorList
 import base64
@@ -47,11 +48,10 @@ def uploading():
                         'content_type': content_type
                 })
 
-        print("user!=premium")
         website=CreateWebsite(user_id,name)
         print("website created in db", website.name)
         print(f"User {user.username} is {'not ' if not user.premium else ''}premium")
-        task = upload_to_s3_demo.delay(user_id, name, encoded_files,user.premium)
+        task = upload_to_s3.delay(user_id, name, encoded_files,user.premium)
         print("task created", task.id)
 
         UpdateWebsiteTask(website,task.id)
@@ -106,38 +106,10 @@ def deleting():
                 abort(400, {"message":'Id must be a string',"error":"website id is not a string"})
         website_id = request.get_json()["website_id"]
 
-        try:
-                website = FindWebsiteById(website_id)
-        except Exception as e:
-                error=str(e)
-                abort(404, {"message":"Website does not exist or is already deleted","error":error})
+        website = FindWebsiteById(website_id)
 
-        to_delete=f"{user_id}/{website.name}/"
-        file_found=False
+        delete_from_s3.delay(user_id,website.name,website.id)
 
-        try:
-                for _ in  bucket.objects.filter(Prefix=to_delete):
-                        print("file_found")
-                        file_found=True
-                        break
-        except:
-                abort(400,{"message":"Error while searching for the website","error":error})
-        if not file_found:
-
-                DeleteWebsiteById(website_id)
-                abort(404, {"message": "Website has already been deleted from bucket"})
-        try:
-                for file in bucket.objects.filter(Prefix=to_delete):
-                        print("\n deleting",file)
-                        file.delete()
-        except Exception as e :
-                error=str(e)
-                abort(400,{"message":"Error while deleting website from the server","error":error})
-        try:
-                DeleteWebsiteById(website_id)
-        except Exception as e:
-                error=str(e)
-                abort(400,{"message":"Can't delete website from db error", "error":error})
         return make_response(f"{website.name} deleted",200)
 
 
