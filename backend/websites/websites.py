@@ -25,16 +25,16 @@ def uploading():
                 return make_response({"error":err},404)
         name = str(request.form["website_name"])
         if name==None or name=="":
-                return make_response({"error":"Website name can't be empty"},400)
+                return make_response({"error":"Website name can't be empty"},422)
         if len(name)<4:
-                return make_response({"error":"Website name too short"},400)
+                return make_response({"error":"Website name too short"},422)
         zipfile = request.files['file']
         print(zipfile, type(zipfile))
         files=extract_files_from_zip(zipfile)
         try: validate_all_files(files)
         except ErrorList as errors:
                 error_json=create_error_json(errors.get_list())
-                return make_response(error_json,400)
+                return make_response(error_json,422)
         encoded_files = []
         for f in files:
                 file_content = base64.b64encode(f.read()).decode('utf-8')
