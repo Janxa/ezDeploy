@@ -6,15 +6,15 @@ import {
 	faGears,
 	faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
-import Button from "../Common/Button.jsx";
+
 import { useEffect, useRef } from "react";
 
-function RenderTreatedWebsites({ websites }) {
+function RenderTreatedWebsites({ websites, handleDelete }) {
 	const [show, setShow] = useState(null);
 	const [isAnimating, setIsAnimating] = useState(false);
 	const dropdownRef = useRef(null);
 	const handleGearIconClick = (key) => {
-		console.log("key=", key, show, isAnimating);
+		console.log("gitkey=", key, show, isAnimating);
 		if (!isAnimating) {
 			setShow(show === key ? null : key);
 			setIsAnimating(true);
@@ -109,7 +109,7 @@ function RenderTreatedWebsites({ websites }) {
 			) : (
 				<div>
 					<p className="border p-1 m-1">{item.name}</p>
-					<div className="flex w-ftablel justify-around"></div>
+					<div className="flex w-ftablel justify-around">{item.status}</div>
 				</div>
 			)}
 		</div>
