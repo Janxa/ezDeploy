@@ -3,7 +3,6 @@ import { loginSchema } from "../../joi_schemas/login_schema";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import AuthService from "../../services/authentification.service";
 import { AuthContext } from "../../context/AuthProvider";
 import ErrorMessage from "../ErrorMessage";
 import axios from "axios";
@@ -54,8 +53,8 @@ function Login(props) {
 		}
 
 		try {
-			const res = await AuthService.login(data["email"], data["password"]);
-			login();
+			await login(data["email"], data["password"]);
+			console.log("response from login ");
 			navigate("/app/dashboard");
 		} catch (error) {
 			console.log("Login error:", error);
