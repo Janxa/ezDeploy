@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthProvider";
 import AuthService from "../services/authentification.service";
 import Button from "./Common/Button";
 function Menu({ visible, setVisible }) {
-	const { isLoggedIn } = useContext(AuthContext);
+	const { user } = useContext(AuthContext);
 	const menuNotLogged = () => {
 		return (
 			<div
@@ -56,7 +56,7 @@ function Menu({ visible, setVisible }) {
 			<div
 				className={
 					visible
-						? "flex flex-col  items-center absolute top-16 left-0 w-full h-screen z-50 md:flex-row md:flex md:w-2/3 md:justify-between md:font-medium md:static md:h-full pt-4 md:pt-0"
+						? "flex flex-col bg-flat-700 md:bg-flat-800 items-center absolute top-16 left-0 w-full h-screen z-50 md:flex-row md:flex md:w-2/3 md:justify-between md:font-medium md:static md:h-full pt-4 md:pt-0"
 						: "hidden md:flex md:w-2/3 md:justify-between   md:font-medium "
 				}
 			>
@@ -75,11 +75,13 @@ function Menu({ visible, setVisible }) {
 					<li>Hello {user}</li>
 					<Link to="about">About</Link>
 					<Link to="contact">Contact</Link>
+					<Link to="dashboard">Dashboard</Link>
+					<Link to="uploader">Upload</Link>
 				</ul>
 			</div>
 		);
 	};
-	return <>{isLoggedIn ? menuLogged() : menuNotLogged()}</>;
+	return <>{user ? menuLogged() : menuNotLogged()}</>;
 }
 
 export default Menu;
