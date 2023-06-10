@@ -11,6 +11,7 @@ import ProgressBar from "../Common/ProgressBar";
 import LoadingWheel from "../Common/LoadingWheel";
 import Button from "../Common/Button";
 import RenderTreatedWebsites from "./RenderTreatedWebsites";
+import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
 	const [websites, setWebsites] = useState([]);
 	const [details, setDetails] = useState("");
@@ -18,6 +19,8 @@ const Dashboard = () => {
 
 	const [streamData, setStreamData] = useState({});
 	const [loading, setLoading] = useState(false);
+
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		console.log("streamData updated:", streamData);
@@ -52,14 +55,19 @@ const Dashboard = () => {
 				setPendingWebsites(pendingWebsites);
 			},
 			(error) => {
-				const _content =
-					(error.response &&
-						error.response.data &&
-						error.response.data.message) ||
-					error.message ||
-					error.toString();
-
-				setWebsites(_content);
+				console.log(error);
+				if (error.code == "ERR_NETWORK" || error.response.status == 401) {
+					AuthService.logout();
+					return navigate("/app/account", {
+						state: { error: "Session expired, please reconnect" },
+					});
+				} else if (error.response.status == 500)
+					return navigate("/app/account", {
+						state: {
+							error:
+								"Server not available, please try again later or contact an admin",
+						},
+					});
 			}
 		);
 	}, []);
@@ -176,20 +184,16 @@ const Dashboard = () => {
 		return;
 	};
 	const handleDelete = async (website_id) => {
-		console.log("deleting", website_id);
-
+		const previousWebsites = { ...websites };
+		setWebsites((prevWebsites) =>
+			prevWebsites.filter((website) => website.id !== website_id)
+		);
 		try {
 			await WebsiteService.deleteWebsite(website_id);
-			setWebsites((prevWebsites) =>
-				prevWebsites.filter((website) => website.id !== website_id)
-			);
 		} catch (error) {
 			if (error.response && error.response.status === 404) {
-				// Website not found or already deleted
-				setWebsites((prevWebsites) =>
-					prevWebsites.filter((website) => website.id !== website_id)
-				);
 			} else {
+				setWebsites(previousWebsites);
 				// Handle other errors
 				console.log("Error deleting website:", error);
 				// Or show a message to the user
@@ -198,7 +202,6 @@ const Dashboard = () => {
 	};
 
 	const handleCancel = async (website_id) => {
-		console.log("cancelling", website_id);
 		try {
 			await WebsiteService.cancelUpload(website_id);
 			setPendingWebsites((prevWebsites) =>
@@ -246,7 +249,10 @@ const Dashboard = () => {
 							</p>
 						</div>
 						<div className="grid col-span-6 gap-y-8 lg:grid-cols-">
-							<RenderTreatedWebsites websites={websites} />
+							<RenderTreatedWebsites
+								websites={websites}
+								handleDelete={handleDelete}
+							/>
 
 							<div className="grid grid-cols-1 lg:gap-y-8 lg:pb-3 ">
 								{pendingWebsites.map((item, key) => (
