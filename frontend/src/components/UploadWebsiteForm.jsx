@@ -23,18 +23,14 @@ function UploadWebsiteForm() {
 		setFileErrors(false);
 		setFiles(false);
 		setZipFileName(false);
-
 		const zipFile = event.target.files[0];
 		setZipFileName(zipFile.name);
-		console.log(typeof zipFile);
-		console.log(zipFile);
 		setLoading(true);
 
 		let file_list = [];
 		try {
 			file_list = await exctractZipFile(zipFile);
 		} catch (error) {
-			console.log("error");
 			setFileErrors("File type not supported: must be a .zip file");
 			setLoading(false);
 			setFiles(null);
@@ -74,6 +70,7 @@ function UploadWebsiteForm() {
 	const handleChange = (event) => {
 		const newWebsiteName = event.target.value;
 		setWebsitename(newWebsiteName);
+		setNameErrors(false);
 	};
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -82,10 +79,6 @@ function UploadWebsiteForm() {
 			const uploadResponse = await WebsiteService.uploadWebsite(
 				files,
 				websiteName
-			);
-			localStorage.setItem(
-				uploadResponse.data.website_name,
-				uploadResponse.data.task_id
 			);
 			setUploading("done");
 			return navigate("/app/dashboard");
@@ -102,7 +95,9 @@ function UploadWebsiteForm() {
 							"Server not available, please try again later or contact an admin",
 					},
 				});
+			else if (e.response.status == 422) setNameErrors(e.response.data.error);
 		}
+		setUploading(false);
 	};
 
 	// File validation functions
