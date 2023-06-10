@@ -11,6 +11,8 @@ const AuthService = {
 		return res;
 	},
 	logout() {
+		document.cookie =
+			"csrf_access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 		localStorage.removeItem("user");
 	},
 	register(username, email, password) {
