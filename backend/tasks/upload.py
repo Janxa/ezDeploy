@@ -37,7 +37,7 @@ def upload_to_s3(self,user_id, name, files,premium):
                             index_link = f"https://{bucket_name}.s3.amazonaws.com/{file_name}"
                             s3.Bucket(bucket_name).put_object(Key=file_name, Body=file_content, ContentType=content_type)
                         else:
-                            index_link="You have a restrained account (see About section)"
+                            index_link='restrained'
                     else:
                         if premium:
                             s3.Bucket(bucket_name).put_object(Key=file_name, Body=file_content,  ContentType=content_type or 'application/octet-stream')
