@@ -85,7 +85,7 @@ def canceling():
         except Exception as e:
                 error=str(e)
                 abort(404, {"message":"Website Already Cancelled","error":error})
-        revoke_task(website.task,website_id)
+        revoke_task(website.task,website_id,website_name,user_id)
         return make_response({"website_id":website_id,"website_name":website_name},200)
 
 
