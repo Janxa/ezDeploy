@@ -1,15 +1,14 @@
 from flask import (Blueprint,
                    request,
                    make_response,
+                   current_app,
                    jsonify)
 from operator import itemgetter
 import secrets
-from backend.authentification.errors import UserNotFoundError,VerificationError
+from datetime import datetime
 from backend.database.database import ValidateToken, FindUser
 from .services import register_user,login,generate_email_validation_token
-from flask_jwt_extended import (create_access_token,
-                                jwt_required,
-                                set_access_cookies)
+from flask_jwt_extended import (create_access_token,set_access_cookies)
 from .errors import LoginError
 authentification=Blueprint('authentification',__name__, url_prefix="/api/authentification")
 
@@ -68,7 +67,10 @@ def login_user():
 
     response=make_response(jsonify({'username':user.username}),200)
     set_access_cookies(response,access_token)
-    response.set_cookie('csrf_access_token', value=csrf_token, httponly=False)
+    expiration_time=datetime.utcnow() + current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
+    response.set_cookie('csrf_access_token', value=csrf_token, httponly=False,expires=expiration_time)
+
+
     return response
 
 
