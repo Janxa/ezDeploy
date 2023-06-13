@@ -11,13 +11,9 @@ import base64
 def FindUser(email=False,user_id=False):
     if email:
         user = Users.query.filter_by(email=email).first()
-        if not user:
-            raise UserNotFoundError
         return user
     if user_id:
         user = Users.query.filter_by(id=user_id).first()
-        if not user:
-            raise UserNotFoundError
         return user
 
 
@@ -89,7 +85,7 @@ def CreateWebsite(user_id,website_name):
     print(user_id)
     user=FindUser(user_id=user_id)
     if not user:
-        raise Exception(({"message": "User not found", "code": 404}))
+        raise UserNotFoundError
     website_id=generate_id()
     website=Websites(id=website_id,user_id=user_id, name=website_name)
     db.session.add(website)
