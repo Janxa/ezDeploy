@@ -3,7 +3,7 @@ from flask_mail  import Message
 from backend import mail
 from .errors import LoginError
 import backend.database as db
-from flask import current_app
+from flask import current_app,make_response
 import re
 
 ph = PasswordHasher()
@@ -37,6 +37,8 @@ def hash_password(password):
 def login(email, password):
     try:
         user = db.FindUser(email=email)
+        if user == None:
+            raise db.UserNotFoundError
         hash = user.password
         ph.verify(hash, password)
     except (db.UserNotFoundError , exceptions.VerifyMismatchError)  as e :
@@ -47,11 +49,12 @@ def login(email, password):
 
 def send__confirmation_email(username,email,token):
     print(token)
-    msg = Message(sender=current_app.config["MAIL_DEFAULT_SENDER"],recipients = [email])
-    msg.subject = "Confirmation email"
-    msg.body = f"""Please Confirm Your Password Using This Link :
-                    Link {token}"""
-    mail.send(msg)
-    # return  make_response("Email Successfully Sent",200)
-    # except Exception as  error:
-    #     return make_response(str(error),400)
+    try:
+        msg = Message(sender=current_app.config["MAIL_DEFAULT_SENDER"],recipients = [email])
+        msg.subject = "Confirmation email"
+        msg.body = f"""Please Confirm Your Password Using This Link :
+                        Link {token}"""
+        mail.send(msg)
+        return  make_response("Email Successfully Sent",200)
+    except Exception as  error:
+        return make_response(str(error),400)
