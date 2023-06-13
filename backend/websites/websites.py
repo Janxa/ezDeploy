@@ -108,7 +108,7 @@ def deleting():
 
         website = FindWebsiteById(website_id)
 
-        delete_from_s3.delay(user_id,website.name,website.id)
+        delete_from_s3.delay(user_id,website.name,website.id,delete_from_db=True)
 
         return make_response(f"{website.name} deleted",200)
 
