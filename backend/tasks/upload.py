@@ -1,4 +1,5 @@
 from .revoke import revoke_task
+from .delete import delete_from_s3
 from ..config import Config
 from ..database.database import UpdateWebsiteStatus,FindWebsiteByTask,UpdateWebsiteTask,UpdateWebsiteLink
 from .. database.errors import WebsiteNotFoundError
@@ -55,4 +56,6 @@ def upload_to_s3(self,user_id, name, files,premium):
                     db.session.rollback()
                     raise
         except:
+            website=FindWebsiteByTask(self.request.id)
             UpdateWebsiteStatus(website,"failure")
+            delete_from_s3(user_id, name, website.id)
