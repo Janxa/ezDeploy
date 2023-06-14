@@ -1,4 +1,4 @@
-import Header from "./components/Header";
+import Header from "./components/Layout/Header/Header";
 import { Outlet } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 function App() {
