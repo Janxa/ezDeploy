@@ -1,33 +1,24 @@
-import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+//This function verifies if the user is still logged
+//It is intended to be used over protected routes to ensure that the user accessing
+//the protected route will be logged out before having to make a rejected api call
 
 const getCookieValue = (name) => {
 	const cookies = document.cookie.split(";");
-
 	for (let i = 0; i < cookies.length; i++) {
 		const cookie = cookies[i].trim();
-
 		if (cookie.startsWith(name + "=")) {
 			return cookie.substring(name.length + 1);
 		}
 	}
 };
-const AuthVerify = (props) => {
-	let location = useLocation();
+const verifyAuth = () => {
+	let authentified = true;
+	let csrfAccessToken = getCookieValue("csrf_access_token");
 
-	useEffect(() => {
-		const user = JSON.parse(localStorage.getItem("user"));
-
-		if (user) {
-			const csrfAccessToken = getCookieValue("csrf_access_token");
-
-			if (!csrfAccessToken) {
-				props.logOut();
-			}
-		}
-	}, [location, props]);
-
-	return;
+	if (!csrfAccessToken) {
+		authentified = false;
+	}
+	return authentified;
 };
 
-export default AuthVerify;
+export default verifyAuth;

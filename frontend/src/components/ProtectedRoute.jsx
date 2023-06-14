@@ -1,10 +1,23 @@
-import React, { useContext } from "react";
-import { Route, Routes, Navigate } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
+import verifyAuth from "./Common/AuthVerify.js";
+const PrivateRoute = ({ element, ...rest }) => {
+	const { user, logout } = useContext(AuthContext);
+	const navigate = useNavigate();
+	// Authentication verification logic
+	useEffect(() => {
+		const authentified = verifyAuth();
+		console.log("authentified ?", authentified);
+		if (!authentified) {
+			logout();
+			return navigate("/app/account", {
+				state: { error: "Session expired, please reconnect" },
+			});
+		}
+	}, [user, logout]);
 
-function PrivateRoute({ element, ...rest }) {
-	const { user } = useContext(AuthContext);
-	return <>{user ? element : <Navigate to="/app/account" replace={true} />}</>;
-}
+	return user ? element : <Navigate to="/app/account" replace={true} />;
+};
 
 export default PrivateRoute;
