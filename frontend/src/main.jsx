@@ -5,7 +5,7 @@ import Account from "./components/Account/Account";
 import "./index.css";
 import { CookiesProvider } from "react-cookie";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ErrorPage from "./components/Error";
+import NotFound from "./components/NotFound";
 import VerifyEmail from "./components/VerifyEmail";
 import Dashboard from "./components/Dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <Landing />,
-		errorElement: <ErrorPage />,
+		errorElement: <NotFound />,
 	},
 	{
 		path: "app",
