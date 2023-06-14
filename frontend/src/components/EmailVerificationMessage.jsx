@@ -14,13 +14,13 @@ function EmailVerificationMessage({ email, resendEmail }) {
 				</p>
 				<p className="rounded-md px-3 py-2  bg-lila-100">
 					<FontAwesomeIcon icon={faEnvelope} className=" text-lila-500 " />
-					<b className="text-lila-500  "> {email} template@email.com</b>.
+					<b className="text-lila-500  "> {email}</b>.
 				</p>
-				<p className="">
+				<p>
 					We've sent you an important message with further instructions. It
 					contains all the details you need to get started
 				</p>
-				<p className="underline underline-offset-2  font-bold ">
+				<p className="underline underline-offset-2 font-bold ">
 					Dont forget to check your spams.
 				</p>
 				<p className="text-sm p-4  text-lila-200    ">
