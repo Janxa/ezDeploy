@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import Account from "./components/Account/Account";
+import Account from "./components/Pages/Account/Account";
 import "./index.css";
 import { CookiesProvider } from "react-cookie";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -12,8 +12,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UploadWebsiteForm from "./components/UploadWebsiteForm";
 import ColorPalet from "./components/Common/colorpalet";
 import Landing from "./components/Landing";
-import Contact from "./components/Contact";
-import About from "./components/About";
+import Contact from "./components/Pages/Contact/Contact";
+import About from "./components/Pages/About/About";
 const router = createBrowserRouter([
 	{
 		path: "/",
