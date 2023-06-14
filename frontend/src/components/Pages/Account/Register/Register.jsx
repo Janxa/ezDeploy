@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { registerSchema } from "../../../../joi_schemas/register_schema";
+import { registerSchema } from "./register_schema";
 import { faKey, faUser, faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import AuthService from "../../../../services/authentification.service";
 import Input from "../../../Common/Input/Input.jsx";
 import Button from "../../../Common/Button";
-import EmailVerificationMessage from "../../../EmailVerificationMessage";
+import EmailVerificationMessage from "./EmailVerificationMessage";
 import axios from "axios";
 function Register(props) {
 	const [data, setData] = useState({ username: "", email: "", password: "" });
