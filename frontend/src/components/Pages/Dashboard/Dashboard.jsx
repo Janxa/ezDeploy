@@ -6,10 +6,10 @@ import {
 	faGears,
 	faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
-import WebsiteService from "../../services/websites.service";
-import ProgressBar from "../Common/ProgressBar";
-import LoadingWheel from "../Common/LoadingWheel";
-import Button from "../Common/Button";
+import WebsiteService from "../../../services/websites.service";
+import ProgressBar from "../../Common/ProgressBar";
+import LoadingWheel from "../../Common/LoadingWheel";
+import Button from "../../Common/Button";
 import RenderTreatedWebsites from "./RenderTreatedWebsites";
 import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
