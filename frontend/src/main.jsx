@@ -5,13 +5,13 @@ import Account from "./components/Pages/Account/Account";
 import "./index.css";
 import { CookiesProvider } from "react-cookie";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import NotFound from "./components/NotFound";
-import VerifyEmail from "./components/VerifyEmail";
-import Dashboard from "./components/Dashboard/Dashboard";
+import NotFound from "./components/Pages/NotFound/NotFound";
+import VerifyEmail from "./components/Pages/VerifyEmail/VerifyEmail";
+import Dashboard from "./components/Pages/Dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import UploadWebsiteForm from "./components/UploadWebsiteForm";
+import UploadWebsiteForm from "./components/Pages/Uploader/UploadWebsiteForm";
 import ColorPalet from "./components/Common/colorpalet";
-import Landing from "./components/Landing";
+import Landing from "./components/Pages/Landing/Landing";
 import Contact from "./components/Pages/Contact/Contact";
 import About from "./components/Pages/About/About";
 const router = createBrowserRouter([
