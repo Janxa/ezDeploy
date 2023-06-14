@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { loginSchema } from "../../../../joi_schemas/login_schema";
+import { loginSchema } from "./login_schema";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faEnvelope,
@@ -8,9 +8,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../../context/AuthProvider";
-import ErrorMessage from "../../../ErrorMessage";
+import ErrorMessage from "./ErrorMessage";
 import axios from "axios";
-import EmailVerificationMessage from "../../../EmailVerificationMessage";
+import EmailVerificationMessage from "../Register/EmailVerificationMessage";
 import Button from "../../../Common/Button";
 import Input from "../../../Common/Input/Input";
 
@@ -116,6 +116,7 @@ function Login(props) {
 					</label>
 					<Input
 						onChange={handleChange}
+						type="email"
 						value={data.email}
 						name="email"
 						icon={faEnvelope}
@@ -129,6 +130,7 @@ function Login(props) {
 					</label>
 					<Input
 						icon={faKey}
+						type="password"
 						onChange={handleChange}
 						value={data.password}
 						name="password"
