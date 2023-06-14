@@ -1,19 +1,17 @@
-import React, { Component } from "react";
+import React from "react";
+import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	faComputer,
 	faCloudArrowUp,
 	faFaceSmileWink,
-	faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "./Common/Button";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useRef } from "react";
 
 function Landing() {
 	const text = useRef(null);
 	const button = useRef(null);
-	const deploys = useRef(null);
 	const build = useRef(null);
 	const upload = useRef(null);
 	const enjoy = useRef(null);
@@ -22,7 +20,6 @@ function Landing() {
 		const elements = [
 			{ ref: text, timeout: 500 },
 			{ ref: button, timeout: 600 },
-
 			{ ref: build, timeout: 1200 },
 			{ ref: upload, timeout: 1700 },
 			{ ref: enjoy, timeout: 2200 },
@@ -31,7 +28,6 @@ function Landing() {
 		elements.forEach(({ ref, timeout }) => {
 			setTimeout(() => {
 				if (ref.current) {
-					console.log(ref.current);
 					ref.current.classList.replace("opacity-0", "opacity-100");
 					ref.current.className = ref.current.className.replace(
 						"-translate-x-8",
