@@ -1,9 +1,8 @@
 import React from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { useEffect, useState } from "react";
-import { contact_schema } from "../../../joi_schemas/contact_schema";
+import { useState } from "react";
+import { contact_schema } from "./Joi.ContactSchema";
 import "react-toastify/dist/ReactToastify.css";
-import "../../styles/react-toastify-custom.css";
 import Input from "../../Common/Input/Input";
 import Textarea from "../../Common/Input/Textarea";
 import Button from "../../Common/Button";
@@ -96,8 +95,6 @@ function Contact() {
 				newestOnTop={false}
 				closeOnClick
 				rtl={false}
-				pauseOnFocusLoss
-				draggable
 				pauseOnHover
 			/>
 
