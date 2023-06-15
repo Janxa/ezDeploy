@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthProvider";
+import { useAuth } from "../context/AuthProvider";
 import verifyAuth from "./Common/AuthVerify.js";
 const PrivateRoute = ({ element }) => {
-	const { user, logout } = useContext(AuthContext);
+	const { user, logout } = useAuth();
 	const navigate = useNavigate();
 	// Authentication verification logic
 	useEffect(() => {

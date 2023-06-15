@@ -1,11 +1,8 @@
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../../../context/AuthProvider";
-import AuthService from "../../../services/authentification.service";
-import Button from "../../Common/Button";
+import { useAuth } from "../../../context/AuthProvider";
 
 function Menu({ visibleMobile, setvisibleMobile }) {
-	const { logout, user } = useContext(AuthContext);
+	const { logout, user } = useAuth();
 
 	const handleLogout = () => {
 		logout();

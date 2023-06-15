@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { loginSchema } from "./login_schema";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,12 +13,13 @@ import axios from "axios";
 import EmailVerificationMessage from "../Register/EmailVerificationMessage";
 import Button from "../../../Common/Button";
 import Input from "../../../Common/Input/Input";
+import { useAuth } from "../../../../context/AuthProvider";
 
 function Login(props) {
 	const [data, setData] = useState({ email: "", password: "" });
 	const [errors, setErrors] = useState({});
 	const [emailSent, setEmailSent] = useState(false);
-	const { login } = useContext(AuthContext);
+	const { login } = useAuth();
 	const schema = loginSchema;
 	const navigate = useNavigate();
 
