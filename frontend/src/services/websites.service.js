@@ -1,15 +1,11 @@
 import axios from "axios";
-
+import cookieService from "./cookie.service";
 const WEBSITES_URL = "/api/websites/";
 
 const getWebsites = () => {
 	return axios.get(WEBSITES_URL + "show");
 };
-function getCookie(csrf_access_token) {
-	const value = `; ${document.cookie}`;
-	const parts = value.split(`; ${csrf_access_token}=`);
-	if (parts.length === 2) return parts.pop().split(";").shift();
-}
+
 const getWebsiteById = (website_id) => {
 	return axios.get(WEBSITES_URL + "getById/" + website_id);
 };
@@ -20,7 +16,7 @@ const cancelUpload = async (website_id) => {
 		withCredentials: true,
 		headers: {
 			"Content-Type": "application/json",
-			"X-CSRF-TOKEN": getCookie("csrf_access_token"),
+			"X-CSRF-TOKEN": cookieService.getCookie("csrf_access_token"),
 		},
 	});
 };
@@ -33,7 +29,7 @@ const uploadWebsite = async (file, websiteName) => {
 		withCredentials: true,
 		headers: {
 			"Content-Type": "multipart/form-data",
-			"X-CSRF-TOKEN": getCookie("csrf_access_token"),
+			"X-CSRF-TOKEN": cookieService.getCookie("csrf_access_token"),
 		},
 	});
 };
@@ -45,7 +41,7 @@ const deleteWebsite = async (website_id) => {
 		withCredentials: true,
 		headers: {
 			"Content-Type": "application/json",
-			"X-CSRF-TOKEN": getCookie("csrf_access_token"),
+			"X-CSRF-TOKEN": cookieService.getCookie("csrf_access_token"),
 		},
 	});
 };
