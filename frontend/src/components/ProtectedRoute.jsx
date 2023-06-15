@@ -2,13 +2,12 @@ import React, { useContext, useEffect } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
 import verifyAuth from "./Common/AuthVerify.js";
-const PrivateRoute = ({ element, ...rest }) => {
+const PrivateRoute = ({ element }) => {
 	const { user, logout } = useContext(AuthContext);
 	const navigate = useNavigate();
 	// Authentication verification logic
 	useEffect(() => {
 		const authentified = verifyAuth();
-		console.log("authentified ?", authentified);
 		if (!authentified) {
 			logout();
 			return navigate("/app/account", {
