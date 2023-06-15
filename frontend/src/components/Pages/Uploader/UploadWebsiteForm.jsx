@@ -38,7 +38,6 @@ function UploadWebsiteForm() {
 		}
 		// Validate all files
 		try {
-			console.log("second try");
 			let numberOfIndex = 0;
 			const fileValidationFunctions = [
 				validateFilenames,
@@ -58,7 +57,9 @@ function UploadWebsiteForm() {
 			// If all files pass validation, update state
 			if (numberOfIndex == 1) setFiles(zipFile);
 			else
-				throw new Error(`The zipfile must one, and only one index.html file`);
+				throw new Error(
+					`The zipfile must contain one, and only one index.html file`
+				);
 		} catch (error) {
 			// Handle validation errors
 			console.log(error);
