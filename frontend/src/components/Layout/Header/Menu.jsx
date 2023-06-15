@@ -12,12 +12,13 @@ function Menu({ visible, setVisible }) {
 	};
 
 	const renderMenuButtons = () => {
+		const style = "p-2 mx-1 rounded-md bg-chili-500 font-semibold";
 		if (user) {
 			return (
 				<Link
 					onClick={handleLogout}
 					to="account"
-					className="p-2 mx-1 rounded-md bg-chili-500 font-semibold"
+					className={style}
 					state={{ disp: "login" }}
 					title="Logout"
 				>
@@ -29,7 +30,7 @@ function Menu({ visible, setVisible }) {
 				<>
 					<Link
 						onClick={() => setVisible(!visible)}
-						className="p-2 mx-1 rounded-md bg-chili-500"
+						className={style}
 						to="account"
 						state={{ disp: "login" }}
 					>
@@ -37,7 +38,7 @@ function Menu({ visible, setVisible }) {
 					</Link>
 					<Link
 						onClick={() => setVisible(!visible)}
-						className="p-2 mx-1 rounded-md bg-chili-500"
+						className={style}
 						to="account"
 						state={{ disp: "register" }}
 					>
