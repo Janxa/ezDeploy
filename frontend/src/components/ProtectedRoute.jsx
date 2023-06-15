@@ -11,7 +11,7 @@ const PrivateRoute = ({ element }) => {
 		if (!authentified) {
 			logout();
 			return navigate("/app/account", {
-				state: { error: "Session expired, please reconnect" },
+				state: { error: "Please Login to access this page" },
 			});
 		}
 	}, [user, logout]);

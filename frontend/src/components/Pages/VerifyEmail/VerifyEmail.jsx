@@ -75,7 +75,7 @@ function EmailVerificationForm() {
 							to="/app/account"
 							state={{ disp: "login" }}
 						>
-							Login
+							Log in
 						</Link>
 					</p>
 				</div>

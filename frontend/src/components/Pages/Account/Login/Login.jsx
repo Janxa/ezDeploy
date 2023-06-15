@@ -110,7 +110,7 @@ function Login(props) {
 			{!emailSent ? (
 				<form onSubmit={handleLogin} className="flex flex-col">
 					<h2 className="font-bold text-2xl text-flat-100  self-center">
-						Sign in
+						Log in
 					</h2>
 					<label htmlFor="email" className="font-medium text-sm py-1">
 						Email:
@@ -146,7 +146,7 @@ function Login(props) {
 							{errors["request"]}
 						</p>
 					)}
-					<Button type="submit" title="Sign in" />
+					<Button type="submit" title="Log in" />
 
 					<p className="text-sm font-light self-center mt-2 ">
 						No account yet ?

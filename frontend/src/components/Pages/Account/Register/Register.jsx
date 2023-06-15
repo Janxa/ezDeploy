@@ -147,7 +147,7 @@ function Register(props) {
 						className="font-medium   underline  decoration-dashed  "
 						onClick={() => props.formSwitch("login")}
 					>
-						Sign in
+						Log in
 					</button>
 				</form>
 			) : (
