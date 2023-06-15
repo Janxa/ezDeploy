@@ -1,9 +1,10 @@
 import axios from "axios";
-const API_URL = "/api/authentification";
+import api from "./api.service";
+const AUTH_URL = "/authentification";
 
 const AuthService = {
 	async login(email, password) {
-		const res = await axios.post(API_URL + "/login", {
+		const res = await api.post(AUTH_URL + "/login", {
 			email: email,
 			password: password,
 		});
@@ -16,7 +17,7 @@ const AuthService = {
 		localStorage.removeItem("user");
 	},
 	register(username, email, password) {
-		return axios.post(API_URL + "/register", {
+		return axios.post(AUTH_URL + "/register", {
 			username: username,
 			email: email,
 			password: password,
