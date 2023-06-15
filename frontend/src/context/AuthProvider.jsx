@@ -1,23 +1,23 @@
 import React, { createContext, useState, useEffect } from "react";
 import AuthService from "../services/authentification.service";
-
+import LoadingWheel from "../components/Common/LoadingWheel";
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);
+
 	useEffect(() => {
 		const currentUser = AuthService.getCurrentUser();
-		console.log(currentUser);
 		if (currentUser) {
 			setUser(currentUser);
 		}
+
 		setIsLoading(false);
 	}, []);
 
 	const login = async (email, password) => {
 		const username = (await AuthService.login(email, password)).data.username;
-		console.log("username == ", username);
 		setUser(username);
 	};
 
@@ -26,7 +26,11 @@ const AuthProvider = ({ children }) => {
 		setUser(false);
 	};
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="flex flex-col w-full h-screen justify-center items-center">
+				<LoadingWheel />
+			</div>
+		);
 	}
 
 	return (
