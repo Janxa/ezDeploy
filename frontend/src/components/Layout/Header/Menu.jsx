@@ -4,7 +4,7 @@ import { AuthContext } from "../../../context/AuthProvider";
 import AuthService from "../../../services/authentification.service";
 import Button from "../../Common/Button";
 
-function Menu({ visible, setVisible }) {
+function Menu({ visibleMobile, setvisibleMobile }) {
 	const { logout, user } = useContext(AuthContext);
 
 	const handleLogout = () => {
@@ -29,7 +29,7 @@ function Menu({ visible, setVisible }) {
 			return (
 				<>
 					<Link
-						onClick={() => setVisible(!visible)}
+						onClick={() => setvisibleMobile(!visibleMobile)}
 						className={style}
 						to="account"
 						state={{ disp: "login" }}
@@ -37,7 +37,7 @@ function Menu({ visible, setVisible }) {
 						Login
 					</Link>
 					<Link
-						onClick={() => setVisible(!visible)}
+						onClick={() => setvisibleMobile(!visibleMobile)}
 						className={style}
 						to="account"
 						state={{ disp: "register" }}
@@ -52,7 +52,7 @@ function Menu({ visible, setVisible }) {
 	return (
 		<div
 			className={
-				visible
+				visibleMobile
 					? "flex flex-col bg-flat-700 md:bg-flat-800 items-center absolute top-16 left-0 w-full h-screen z-50 md:flex-row md:flex md:w-2/3 md:justify-between md:font-medium md:static md:h-full pt-4 md:pt-0"
 					: "hidden md:flex md:w-2/3 md:justify-between md:font-medium "
 			}
