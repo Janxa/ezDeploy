@@ -1,80 +1,82 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthProvider";
-
-function Menu({ visibleMobile, setvisibleMobile }) {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+	faTable,
+	faArrowUpFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
+function Menu({ visibleMobile, setVisibleMobile }) {
 	const { logout, user } = useAuth();
 
 	const handleLogout = () => {
 		logout();
 	};
+	if (user)
+		return (
+			<ul className="flex flex-col-reverse md:items-center md:flex-row md:justify-between lg:justify-end  gap-x-4 lg:gap-x-10  w-full xl:w-2/3">
+				<li className="flex mb-4 md:mb-0   justify-between self-center underline decoration-dashed  text-flat-100 hover:text-flat-200 transition-colors ease-in-out duration-100">
+					<Link to="about">About </Link>
+				</li>
 
-	const renderMenuButtons = () => {
-		const style = "p-2 mx-1 rounded-md bg-chili-500 font-semibold";
-		if (user) {
-			return (
-				<Link
-					onClick={handleLogout}
-					to="account"
-					className={style}
-					state={{ disp: "login" }}
-					title="Logout"
-				>
-					Logout
-				</Link>
-			);
-		} else {
-			return (
-				<>
+				<li className="flex mb-4 md:mb-0  justify-between self-center underline decoration-dashed text-flat-100 hover:text-flat-200 transition-colors ease-in-out duration-100">
+					<Link to="contact">Contact</Link>
+				</li>
+				<li className="flex font-bold mb-4 md:mb-0  items-center justify-around gap-x-4 lg:gap-x-8 self-center underline text-lila-200 hover:text-lila-300 transition-colors ease-in-out duration-100">
+					<div>
+						<Link to="dashboard">Dashboard</Link>
+						<FontAwesomeIcon icon={faTable} className="fa-xs ml-2 " />
+					</div>
+					<div>
+						<Link to="uploader">Upload </Link>
+						<FontAwesomeIcon
+							icon={faArrowUpFromBracket}
+							className="fa-xs ml-2"
+						/>
+					</div>
+				</li>
+				<li className="flex mb-4 md:mb-0 justify-end self-center">
 					<Link
-						onClick={() => setvisibleMobile(!visibleMobile)}
-						className={style}
+						onClick={handleLogout}
+						to="account"
+						className="p-2 mx-1 rounded-md bg-chili-500 hover:bg-chili-600 hover:text-flat-200 font-semibold"
+						state={{ disp: "login" }}
+						title="Logout"
+					>
+						Logout
+					</Link>
+				</li>
+			</ul>
+		);
+	else
+		return (
+			<ul className="flex flex-col-reverse md:items-center md:flex-row md:justify-end lg:w-3/4 gap-x-4 lg:gap-x-10 md:w-full">
+				<li className="flex mb-4 md:mb-0   md:w-auto justify-between self-center underline decoration-dashed  text-flat-100 hover:text-flat-200 transition-colors ease-in-out duration-100">
+					<Link to="about">About</Link>
+				</li>
+
+				<li className="flex mb-4 md:mb-0  md:w-auto justify-between self-center underline decoration-dashed text-flat-100 hover:text-flat-200 transition-colors ease-in-out duration-100">
+					<Link to="contact">Contact</Link>
+				</li>
+				<li className="flex mb-4 md:mb-0  md:justify-between justify-end gap-x-2 lg:gap-x-4 md:w-auto ">
+					<Link
+						onClick={() => setVisibleMobile(!visibleMobile)}
+						className="p-2  rounded-md bg-chili-500 hover:bg-chili-600 hover:text-flat-200 font-semibold"
 						to="account"
 						state={{ disp: "login" }}
 					>
-						Login
+						Log in
 					</Link>
 					<Link
-						onClick={() => setvisibleMobile(!visibleMobile)}
-						className={style}
+						onClick={() => setVisibleMobile(!visibleMobile)}
+						className="p-2  rounded-md bg-chili-500 hover:bg-chili-600 hover:text-flat-200 font-semibold"
 						to="account"
 						state={{ disp: "register" }}
 					>
 						Register
 					</Link>
-				</>
-			);
-		}
-	};
-
-	return (
-		<div
-			className={
-				visibleMobile
-					? "flex flex-col bg-flat-700 md:bg-flat-800 items-center absolute top-16 left-0 w-full h-screen z-50 md:flex-row md:flex md:w-2/3 md:justify-between md:font-medium md:static md:h-full pt-4 md:pt-0"
-					: "hidden md:flex md:w-2/3 md:justify-between md:font-medium "
-			}
-		>
-			<ul className="flex flex-col md:items-center md:flex-row-reverse md:justify-between w-3/4 md:w-full">
-				<li className="flex mb-4 md:mb-0  basis-1/4 w-1/2 md:w-auto justify-around self-center">
-					{renderMenuButtons()}
 				</li>
-
-				<li className="flex mb-4 md:mb-0  basis-1/4 w-1/2 md:w-auto justify-around self-center">
-					<Link to="about">About</Link>
-				</li>
-
-				<li className="flex mb-4 md:mb-0  basis-1/4 w-1/2 md:w-auto justify-around self-center">
-					<Link to="contact">Contact</Link>
-				</li>
-				{user && (
-					<>
-						<Link to="dashboard">Dashboard</Link>
-						<Link to="uploader">Upload</Link>
-					</>
-				)}
 			</ul>
-		</div>
-	);
+		);
 }
 
 export default Menu;
