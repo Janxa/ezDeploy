@@ -17,7 +17,7 @@ function Input({
     h-full
     w-full
     p-1
-    pl-8
+    ${icon && "pl-8"}
     rounded-sm
 	bg-flat-100
     focus:outline-none
