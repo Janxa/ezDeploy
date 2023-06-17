@@ -9,7 +9,7 @@ import NotFound from "./components/Pages/NotFound/NotFound";
 import VerifyEmail from "./components/Pages/VerifyEmail/VerifyEmail";
 import Dashboard from "./components/Pages/Dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import UploadWebsiteForm from "./components/Pages/Uploader/UploadWebsiteForm";
+import Uploader from "./components/Pages/Uploader/Uploader";
 import ColorPalet from "./components/Common/colorpalet";
 import Landing from "./components/Pages/Landing/Landing";
 import Contact from "./components/Pages/Contact/Contact";
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "uploader",
-				element: <ProtectedRoute element={<UploadWebsiteForm />} />,
+				element: <ProtectedRoute element={<Uploader />} />,
 			},
 			{
 				path: "colors",
