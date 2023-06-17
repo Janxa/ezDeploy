@@ -24,7 +24,7 @@ const VerifyEmailForm = ({
 				extraStyle={"text-xs sm:text-sm md:text-base"}
 			/>
 			{errors["code"] && (
-				<p className="font-medium text-sm py-1 text-color-red-primary self-center">
+				<p className="font-medium text-sm py-1 text-invalid-500  self-center">
 					{errors["code"]}
 				</p>
 			)}
