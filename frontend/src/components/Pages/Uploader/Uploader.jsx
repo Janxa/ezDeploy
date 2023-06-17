@@ -8,7 +8,6 @@ import LoadingWheel from "../../Common/LoadingWheel";
 import { faCheck, faTimes, faPen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Input from "../../Common/Input/Input.jsx";
-import { redirect } from "react-router-dom";
 function Uploader() {
 	const [files, setFiles] = useState(null);
 	const [fileErrors, setFileErrors] = useState(false);
@@ -214,7 +213,7 @@ function Uploader() {
 				value={websiteName}
 				type="text"
 				name="website"
-				icon={<FontAwesomeIcon icon={faPen} className="fa-md" />}
+				icon={faPen}
 				errors={nameErrors}
 			/>
 			{uploading ? (
