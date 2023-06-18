@@ -21,10 +21,15 @@ const router = createBrowserRouter([
 		errorElement: <NotFound />,
 	},
 	{
-		path: "app",
+		path: "/app",
+
 		element: <App />,
 
 		children: [
+			{
+				index: true,
+				element: <Account />,
+			},
 			{
 				path: "account",
 				element: <Account />,
