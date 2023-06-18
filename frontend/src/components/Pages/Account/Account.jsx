@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import Login from "./Login/Login";
 import Register from "./Register/Register";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthProvider";
 
 function Account() {
 	//resetting state to prevent uncontrolled behaviors
@@ -9,7 +10,10 @@ function Account() {
 	let { state } = useLocation();
 	const [disp, setDisp] = useState(state);
 	const [loggedOut, setLoggedOut] = useState(false);
+	const { user } = useAuth();
+	const navigate = useNavigate();
 	useEffect(() => {
+		if (user) navigate("/app/dashboard");
 		setDisp(state?.disp || "login");
 		setLoggedOut(state?.error || false);
 	}, [state]);
