@@ -38,7 +38,7 @@ function EmailVerificationForm() {
 		} catch (error) {
 			if (error.response.status == 500)
 				error = "No response, server might be offline, try again later";
-			else error = error.reponse.data.error;
+			else error = error.response.data.error;
 			setErrors(error);
 			setLoading(false);
 			return;
