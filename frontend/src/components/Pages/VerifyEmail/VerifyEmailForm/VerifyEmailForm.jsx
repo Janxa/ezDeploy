@@ -1,10 +1,12 @@
 import Input from "../../../Common/Input/Input";
 import Button from "../../../Common/Button";
+import LoadingWheel from "../../../Common/LoadingWheel";
 const VerifyEmailForm = ({
 	handleSubmit,
 	handleChange,
 	verificationCode,
 	errors,
+	loading,
 }) => {
 	return (
 		<form
@@ -23,14 +25,18 @@ const VerifyEmailForm = ({
 				className="input"
 				extraStyle={"text-xs sm:text-sm md:text-base"}
 			/>
-			{errors["code"] && (
-				<p className="font-medium text-sm py-1 text-invalid-500  self-center">
-					{errors["code"]}
+			{errors && (
+				<p className="font-medium text-sm py-1 text-invalid-500  self-center text-center">
+					{errors}
 				</p>
 			)}
-			<Button title="Verify" type="submit">
-				Validate
-			</Button>
+			{loading ? (
+				<LoadingWheel />
+			) : (
+				<Button title="Verify" type="submit">
+					Validate
+				</Button>
+			)}
 		</form>
 	);
 };

@@ -9,22 +9,25 @@ function EmailVerificationForm() {
 	const [verificationCode, setVerificationCode] = useState(
 		Object.keys(Code).length !== 0 ? Code.verificationCode : ""
 	);
-	const [errors, setErrors] = useState({});
+	const [errors, setErrors] = useState(false);
 	const [verified, setVerified] = useState(null);
+	const [loading, setLoading] = useState(false);
 	const schema = EmailVerificationSchema;
 
 	const handleChange = ({ currentTarget: input }) => {
-		console.log(errors);
+		setErrors(false);
 		setVerificationCode(input.value);
 	};
 	const handleSubmit = async (event) => {
-		let errors = {};
+		setLoading(true);
+		let error = {};
 		event.preventDefault();
 		try {
 			await schema.validateAsync({ code: verificationCode });
 		} catch (error) {
-			errors["code"] = "The verification code is incorrect.";
-			setErrors(errors);
+			error = error.message;
+			setErrors(error);
+			setLoading(false);
 			return;
 		}
 		try {
@@ -33,8 +36,14 @@ function EmailVerificationForm() {
 			);
 			setVerified(res.data);
 		} catch (error) {
-			console.log("Error :", error);
+			if (error.response.status == 500)
+				error = "No response, server might be offline, try again later";
+			else error = error.reponse.data.error;
+			setErrors(error);
+			setLoading(false);
+			return;
 		}
+		setLoading(false);
 	};
 	const content = () => {
 		if (!verified)
@@ -44,6 +53,7 @@ function EmailVerificationForm() {
 					handleChange={handleChange}
 					verificationCode={verificationCode}
 					errors={errors}
+					loading={loading}
 				/>
 			);
 		return (
