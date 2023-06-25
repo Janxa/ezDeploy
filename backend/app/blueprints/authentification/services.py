@@ -1,15 +1,16 @@
 from argon2 import PasswordHasher,exceptions
 from flask_mail  import Message
 from app import mail
-from .errors import LoginError
-import app.database as db
+from .errors import LoginError,UserNotFoundError
+from app.extensions import flask_firestore as db
 from flask import current_app,make_response
 import re
 
 ph = PasswordHasher()
 
 def register_user(username,email,password,):
-    user = db.FindUser(email=email)
+
+    user = db.get_document()
     if user:
         raise Exception({"message": "Email already used", "code": 409})
     pattern = re.compile("^[ a-zA-Z0-9!@#$%^&*()_+\-=\[\\]'\"{};:,.<>\/?]+$")
@@ -36,12 +37,12 @@ def hash_password(password):
 
 def login(email, password):
     try:
-        user = db.FindUser(email=email)
+        user = db.find_single_document("user","email",email)
         if user == None:
-            raise db.UserNotFoundError
+            raise UserNotFoundError
         hash = user.password
         ph.verify(hash, password)
-    except (db.UserNotFoundError , exceptions.VerifyMismatchError)  as e :
+    except (UserNotFoundError , exceptions.VerifyMismatchError)  as e :
             raise LoginError()
     return user
     # if ph.check_needs_rehash(hash):

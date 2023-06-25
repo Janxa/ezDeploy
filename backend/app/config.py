@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import json
 from datetime import timedelta
 load_dotenv()
 
@@ -12,19 +13,6 @@ class Config:
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
     bucket_name=os.getenv('BUCKET_NAME')
 
-
-    # mySql_config
-    host=os.getenv('MYSQL_HOST')
-    user=os.getenv('MYSQL_USERNAME')
-    password=os.getenv('MYSQL_PASSWORD')
-    db_name=os.getenv('MYSQL_DB_NAME')
-
-    # sqlAlchemy_config
-    SQLALCHEMY_DATABASE_URI=os.getenv('SQLALCHEMY_DATABASE_URI')
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_pre_ping": True,
-        "pool_recycle": 3000,
-    }
     # JWT_Config
     JWT_TOKEN_LOCATION = ['cookies','headers']
     JWT_ACCESS_COOKIE_NAME = 'access_token_cookie'
@@ -45,7 +33,8 @@ class Config:
     # Result backend settings
     CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
 
-
+    #Firestore key
+    FIRESTORE_KEY = json.loads(os.getenv("FIRESTORE_CERTIFICATE"))
 
 
 config = Config()

@@ -1,6 +1,4 @@
 from celery.result import AsyncResult
-from celery.exceptions import Terminated
-from ..database.database import DeleteWebsiteById
 from celery import shared_task
 from .delete import delete_from_s3
 @shared_task()

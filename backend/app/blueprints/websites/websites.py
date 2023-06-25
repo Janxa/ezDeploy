@@ -1,14 +1,13 @@
-from flask import Blueprint,request,make_response,jsonify,abort
+from flask import Blueprint,request,make_response,jsonify,abort,current_app
 from flask_jwt_extended import jwt_required,get_jwt_identity
-from ..config import Config
+from app.config import Config
+from app.extensions import flask_firestore as db
 from .services import validate_all_files,create_error_json,extract_files_from_zip
 from operator import itemgetter
-from ..database.database import UpdateWebsiteTask,FindUser, CreateWebsite, GetAllWebsites,FindWebsiteById,UpdateWebsiteCancelled, DeleteWebsiteById
-from ..database.errors import UserNotFoundError
-from ..tasks.upload import upload_to_s3
-from ..tasks.revoke import revoke_task
-from ..tasks.delete import delete_from_s3
-from ..extensions.aws_s3 import s3
+from app.tasks.upload import upload_to_s3
+from app.tasks.revoke import revoke_task
+from app.tasks.delete import delete_from_s3
+from app.extensions.aws_s3 import s3
 from .errors import ErrorList
 import base64
 
@@ -18,24 +17,24 @@ websites=Blueprint('websites',__name__, url_prefix="/api/websites")
 @jwt_required()
 def uploading():
         user_id = get_jwt_identity()
+        user=db.get_document("users",user_id)
 
-        try:
-                user=FindUser(user_id=user_id)
-        except UserNotFoundError as e:
-                err=str(e)
-                return make_response({"error":err},404)
+        if user == None:
+                return make_response({"error":"UserNotFound"},404)
+
         name = str(request.form["website_name"])
         if name==None or name=="":
                 return make_response({"error":"Website name can't be empty"},422)
         if len(name)<4:
                 return make_response({"error":"Website name too short"},422)
+
         zipfile = request.files['file']
-        print(zipfile, type(zipfile))
         files=extract_files_from_zip(zipfile)
         try: validate_all_files(files)
         except ErrorList as errors:
                 error_json=create_error_json(errors.get_list())
                 return make_response(error_json,422)
+
         encoded_files = []
         for f in files:
                 file_content = base64.b64encode(f.read()).decode('utf-8')
@@ -48,14 +47,11 @@ def uploading():
                         'content_type': content_type
                 })
 
-        website=CreateWebsite(user_id,name)
-        print("website created in db", website.name)
-        print(f"User {user.username} is {'not ' if not user.premium else ''}premium")
-        task = upload_to_s3.delay(user_id, name, encoded_files,user.premium)
-        print("task created", task.id)
+        website_id=db.add_document("websites",{"user_id":user_id,"website_name":name})
 
-        UpdateWebsiteTask(website,task.id)
-        print("task",task.id, "added to ",website.name,"'s task_id column")
+
+        task = upload_to_s3.delay(user_id, name, encoded_files,user.premium)
+        db.update_document("websites",website_id,{"task":task.id})
         return make_response({"task_id":task.id,"website_name":name},200)
 
 @websites.route("/cancel",methods=['DELETE'])

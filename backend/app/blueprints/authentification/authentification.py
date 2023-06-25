@@ -6,7 +6,6 @@ from flask import (Blueprint,
 from operator import itemgetter
 import secrets
 from datetime import datetime
-from ..database.database import ValidateToken, FindUser
 from .services import register_user,login,generate_email_validation_token
 from flask_jwt_extended import (create_access_token,set_access_cookies)
 from .errors import LoginError
@@ -77,3 +76,15 @@ def login_user():
 
 
 
+
+# @authentification.route("/login",methods=['POST'])
+# def login_user():
+#     email,password=itemgetter('email','password')(request.get_json())
+
+#     db=current_app.extensions["firestore"]
+#     print(db.collections())
+#     test=db.collections()
+#     x=next((next(test).list_documents())).get().to_dict()
+#     [print(item) for item in x ]
+#     response=make_response("ok")
+#     return response

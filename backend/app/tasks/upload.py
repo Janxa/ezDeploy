@@ -1,13 +1,9 @@
 from .revoke import revoke_task
 from .delete import delete_from_s3
 from ..config import Config
-from ..database.database import UpdateWebsiteStatus,FindWebsiteByTask,UpdateWebsiteTask,UpdateWebsiteLink
-from .. database.errors import WebsiteNotFoundError
 from ..extensions.aws_s3 import s3
 import time
-from ..models import Websites
 from sqlalchemy.exc import PendingRollbackError
-from .. import db
 from flask import current_app
 from celery import shared_task
 import base64
@@ -15,7 +11,7 @@ import base64
 @shared_task(bind=True, max_retries=3, default_retry_delay=10)
 def upload_to_s3(self,user_id, name, files,premium):
     with current_app.app_context():
-
+        db=current_app.extensions["firestore"]
         try:
             bucket_name = Config.bucket_name
             i=0
