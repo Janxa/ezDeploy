@@ -5,12 +5,14 @@ import Input from "../../../Common/Input/Input.jsx";
 import Button from "../../../Common/Button";
 import EmailVerificationMessage from "./EmailVerificationMessage";
 import axios from "axios";
+import LoadingWheel from "../../../Common/LoadingWheel";
 function Register(props) {
 	const [data, setData] = useState({ username: "", email: "", password: "" });
 	const [errors, setErrors] = useState({});
 	const [emailsent, setEmailsent] = useState(false);
 	const [emailresent, setEmailResent] = useState(false);
 	const schema = registerSchema;
+	const [loading, setLoading] = useState(false);
 
 	const handleChange = ({ currentTarget: input }) => {
 		if (errors[input.name]) {
@@ -29,6 +31,7 @@ function Register(props) {
 		});
 	};
 	const handleSubmit = async (event) => {
+		setLoading(true);
 		event.preventDefault();
 		let errors = {};
 		const validationResult = schema.validate(data, { abortEarly: false });
@@ -60,6 +63,7 @@ function Register(props) {
 			setErrors(errors);
 			console.log(errors);
 		}
+		setLoading(false);
 	};
 	const resendEmail = async () => {
 		try {
@@ -93,6 +97,7 @@ function Register(props) {
 						icon={faUser}
 						onChange={handleChange}
 						value={data.username}
+						name="username"
 						type="text"
 						id="username_input"
 						valid={errors["username"] ? false : true}
@@ -120,6 +125,7 @@ function Register(props) {
 					<Input
 						onChange={handleChange}
 						value={data.password}
+						type="password"
 						name="password"
 						icon={faKey}
 						id="password_input"
@@ -132,14 +138,17 @@ function Register(props) {
 							{errors["request"]}
 						</p>
 					)}
-
-					<Button
-						title="Register"
-						type="submit"
-						disabled={
-							data.email && data.password && data.username ? false : true
-						}
-					/>
+					{loading ? (
+						<LoadingWheel />
+					) : (
+						<Button
+							title="Register"
+							type="submit"
+							disabled={
+								data.email && data.password && data.username ? false : true
+							}
+						/>
+					)}
 					<p className="text-sm font-light self-center mt-2 ">
 						Already got an account ?
 					</p>
