@@ -7,7 +7,7 @@ function Input({
 	name,
 	id,
 	extraStyle,
-	errors,
+	errors = "",
 	disabled,
 	icon,
 	placeholder = "",
