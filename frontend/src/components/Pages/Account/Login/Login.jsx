@@ -14,7 +14,7 @@ import EmailVerificationMessage from "../Register/EmailVerificationMessage";
 import Button from "../../../Common/Button";
 import Input from "../../../Common/Input/Input";
 import { useAuth } from "../../../../context/AuthProvider";
-
+import { Link } from "react-router-dom";
 function Login(props) {
 	const [data, setData] = useState({ email: "", password: "" });
 	const [errors, setErrors] = useState({});
@@ -125,10 +125,17 @@ function Login(props) {
 						valid={errors["email"] ? false : true}
 						errors={errors["email"]}
 					/>
-
-					<label htmlFor="password" className="text-sm font-medium py-1">
-						Password:
-					</label>
+					<div className="flex justify-between text-sm item-center py-1">
+						<label htmlFor="password" className="text-sm font-medium">
+							Password:
+						</label>
+						<Link
+							to="../reset-password"
+							className=" font-medium  text-lila-300 underline hover:text-lila-200  transition-colors duration-75  "
+						>
+							Forgot password ?
+						</Link>
+					</div>
 					<Input
 						icon={faKey}
 						type="password"
@@ -147,16 +154,16 @@ function Login(props) {
 						</p>
 					)}
 					<Button type="submit" title="Log in" />
-
-					<p className="text-sm font-light self-center mt-2 ">
-						No account yet ?
-					</p>
-					<button
-						className=" font-medium  text-color-blue-primary underline  decoration-dashed  "
-						onClick={() => props.formSwitch("register")}
-					>
-						Sign up
-					</button>
+					<div className="self-end flex">
+						{" "}
+						<p className="text-sm font-light   ">No account yet ? </p>
+						<button
+							className=" font-medium text-sm  ml-2 text-lila-300 underline  hover:text-lila-200  transition-colors duration-75"
+							onClick={() => props.formSwitch("register")}
+						>
+							Sign up
+						</button>
+					</div>
 				</form>
 			) : (
 				<EmailVerificationMessage

@@ -30,8 +30,11 @@ function Account() {
 				false
 			)}
 			<div className="bg-flat-700 w-3/4 md:w-1/2 lg:w-2/3 m-auto shadow-md rounded-md  flex flex-col">
-				{disp === "login" ? <Login formSwitch={formSwitch} /> : false}
-				{disp === "register" ? <Register formSwitch={formSwitch} /> : false}
+				{disp === "login" ? (
+					<Login formSwitch={formSwitch} />
+				) : (
+					<Register formSwitch={formSwitch} />
+				)}
 			</div>
 		</main>
 	);

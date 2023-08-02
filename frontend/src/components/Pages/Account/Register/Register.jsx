@@ -45,6 +45,7 @@ function Register(props) {
 			}
 
 			setErrors(error_list);
+			setLoading(false);
 			return;
 		}
 		try {
@@ -149,15 +150,17 @@ function Register(props) {
 							}
 						/>
 					)}
-					<p className="text-sm font-light self-center mt-2 ">
-						Already got an account ?
-					</p>
-					<button
-						className="font-medium   underline  decoration-dashed  "
-						onClick={() => props.formSwitch("login")}
-					>
-						Log in
-					</button>
+
+					<div className="self-end flex">
+						{" "}
+						<p className="text-sm font-light   "> Already got an account ?</p>
+						<button
+							className=" font-medium text-sm  ml-2 text-lila-300 underline  hover:text-lila-200  transition-colors duration-75"
+							onClick={() => props.formSwitch("login")}
+						>
+							Log in
+						</button>
+					</div>
 				</form>
 			) : (
 				<EmailVerificationMessage
