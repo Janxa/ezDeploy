@@ -15,10 +15,12 @@ import Button from "../../../Common/Button";
 import Input from "../../../Common/Input/Input";
 import { useAuth } from "../../../../context/AuthProvider";
 import { Link } from "react-router-dom";
+import LoadingWheel from "../../../Common/LoadingWheel";
 function Login(props) {
 	const [data, setData] = useState({ email: "", password: "" });
 	const [errors, setErrors] = useState({});
 	const [emailSent, setEmailSent] = useState(false);
+	const [loading, setLoading] = useState(false);
 	const { login } = useAuth();
 	const schema = loginSchema;
 	const navigate = useNavigate();
@@ -41,50 +43,56 @@ function Login(props) {
 	};
 
 	const handleLogin = async (event) => {
-		event.preventDefault();
-		let errors = {};
+		setLoading(true);
+		{
+			event.preventDefault();
+			let errors = {};
 
-		const validationResult = schema.validate(data, { abortEarly: false });
-		if (validationResult.error) {
-			// Validation failed
-			console.error(validationResult.error.details);
-			const error_list = { ...errors };
+			const validationResult = schema.validate(data, { abortEarly: false });
+			if (validationResult.error) {
+				// Validation failed
+				console.error(validationResult.error.details);
+				const error_list = { ...errors };
 
-			for (let error of validationResult.error.details) {
-				error_list[error.context.label] = error.message;
+				for (let error of validationResult.error.details) {
+					error_list[error.context.label] = error.message;
+				}
+
+				setErrors(error_list);
+				setLoading(false);
+
+				return;
 			}
 
-			setErrors(error_list);
-			return;
-		}
-
-		try {
-			await login(data["email"], data["password"]);
-			console.log("response from login ");
-			navigate("/app/dashboard");
-		} catch (error) {
-			console.log("Login error:", error);
-			if (error.response.status == 500) {
-				errors["request"] =
-					"Server Error. Check your connexion or try again later";
-			} else if (error.response.data["Error"] == "Not validated") {
-				errors["request"] = (
-					<ErrorMessage
-						message="Your email has not been validated, please check your emails or "
-						onButtonClick={resendEmail}
-						buttonContent="Resend one"
-					/>
-				);
-			} else if (error.response) {
-				errors["request"] = error.response.data.error;
-				console.log(errors);
-			} else {
-				errors["request"] = error.request.statusText;
+			try {
+				await login(data["email"], data["password"]);
+				console.log("response from login ");
+				navigate("/app/dashboard");
+			} catch (error) {
+				console.log("Login error:", error);
+				if (error.response.status == 500) {
+					errors["request"] =
+						"Server Error. Check your connexion or try again later";
+				} else if (error.response.data["error"] == "User not validated") {
+					errors["request"] = (
+						<ErrorMessage
+							message="Your email has not been validated, please check your emails or "
+							onButtonClick={resendEmail}
+							buttonContent="Resend one"
+						/>
+					);
+				} else if (error.response) {
+					errors["request"] = error.response.data.error;
+					console.log(errors);
+				} else {
+					errors["request"] = error.request.statusText;
+					console.log(errors);
+				}
+				setErrors(errors);
 				console.log(errors);
 			}
-			setErrors(errors);
-			console.log(errors);
 		}
+		setLoading(false);
 	};
 	const resendEmail = async () => {
 		try {
@@ -106,9 +114,9 @@ function Login(props) {
 	};
 
 	return (
-		<div className="p-5 ">
+		<div className="flex flex-col ">
 			{!emailSent ? (
-				<form onSubmit={handleLogin} className="flex flex-col">
+				<form onSubmit={handleLogin} className="flex flex-col p-5 ">
 					<h2 className="font-bold text-2xl text-flat-100  self-center">
 						Log in
 					</h2>
@@ -147,13 +155,13 @@ function Login(props) {
 						errors={errors["password"]}
 					/>
 
+					{loading ? <LoadingWheel /> : <Button type="submit" title="Log in" />}
 					{errors["request"] && (
 						<p className="text-md my-2 text-center w-fulls text-invalid-500 self-center">
 							<FontAwesomeIcon icon={faTriangleExclamation} />
 							{errors["request"]}
 						</p>
 					)}
-					<Button type="submit" title="Log in" />
 					<div className="self-end flex">
 						{" "}
 						<p className="text-sm font-light   ">No account yet ? </p>
@@ -167,6 +175,7 @@ function Login(props) {
 				</form>
 			) : (
 				<EmailVerificationMessage
+					resend={true}
 					resendEmail={resendEmail}
 					email={data.email}
 				/>
