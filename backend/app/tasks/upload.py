@@ -2,6 +2,7 @@ from .revoke import revoke_task
 from .delete import delete_from_s3
 from ..config import Config
 from ..extensions.aws_s3 import s3
+from app.extensions import flask_firestore as db
 import time
 from sqlalchemy.exc import PendingRollbackError
 from flask import current_app
@@ -9,9 +10,10 @@ from celery import shared_task
 import base64
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=10)
-def upload_to_s3(self,user_id, name, files,premium):
+def upload_to_s3(self,user_id,website_id, name, files,premium):
     with current_app.app_context():
-        db=current_app.extensions["firestore"]
+        user_ref=db.get_document("users",user_id,ref=True)
+        website_ref=user_ref.collection("websites").document(website_id)
         try:
             bucket_name = Config.bucket_name
             i=0
@@ -41,17 +43,11 @@ def upload_to_s3(self,user_id, name, files,premium):
 
 
             try:
+                    website_ref.update({"task":None,"link":index_link,"status":"success"})
 
-                    website=FindWebsiteByTask(self.request.id)
-                    print("website => ", website)
-                    UpdateWebsiteTask(website, None)
-                    UpdateWebsiteLink(website, index_link)
-                    UpdateWebsiteStatus(website, "success")
-
-            except PendingRollbackError:
-                    db.session.rollback()
+            except Exception as e:
+                    print(e)
                     raise
         except:
-            website=FindWebsiteByTask(self.request.id)
-            UpdateWebsiteStatus(website,"failure")
-            delete_from_s3(user_id, name, website.id)
+            website_ref.update({"task":None,"link":index_link,"status":"failure"})
+            delete_from_s3(user_id, name, website_id)
