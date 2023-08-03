@@ -15,7 +15,9 @@ def delete_from_s3(self, user_id, website_name, website_id, delete_from_db=False
                     [file.delete() and print(f"Deleted file: {file.key}")for file in bucket.objects.filter(Prefix=to_delete)]
 
                 if delete_from_db:
-                  db.delete_document("websites",website_id)
-
+                    user_ref=db.get_document("users",user_id,ref=True)
+                    website_ref=user_ref.collection("websites").document(website_id)
+                    website_ref.delete()
     except Exception as e:
+
         self.retry()
