@@ -17,16 +17,28 @@ websites=Blueprint('websites',__name__, url_prefix="/api/websites")
 @jwt_required()
 def uploading():
         user_id = get_jwt_identity()
-        user=db.get_document("users",user_id)
-
-        if user == None:
+        user_ref=db.get_document("users",user_id,True)
+        if user_ref == None:
                 return make_response({"error":"UserNotFound"},404)
+        user_websites=user_ref.collection('websites')
+        user_snapshot = user_ref.get()
+        user_data = user_snapshot.to_dict()
 
-        name = str(request.form["website_name"])
-        if name==None or name=="":
+        new_website_name = str(request.form["website_name"])
+
+        if new_website_name==None or new_website_name=="":
                 return make_response({"error":"Website name can't be empty"},422)
-        if len(name)<4:
+        if len(new_website_name)<4:
                 return make_response({"error":"Website name too short"},422)
+
+        count_query=user_websites.count()
+        query_result=count_query.get()
+
+        if query_result[0][0].value>=3:
+                return make_response({"error":"Can not upload more than 3 websites"},422)
+
+
+
 
         zipfile = request.files['file']
         files=extract_files_from_zip(zipfile)
@@ -47,12 +59,17 @@ def uploading():
                         'content_type': content_type
                 })
 
-        website_id=db.add_document("websites",{"user_id":user_id,"website_name":name})
 
 
-        task = upload_to_s3.delay(user_id, name, encoded_files,user.premium)
-        db.update_document("websites",website_id,{"task":task.id})
-        return make_response({"task_id":task.id,"website_name":name},200)
+
+        new_website=user_websites.document()
+        new_website.set({"name":new_website_name})
+        new_website_id=new_website.get().id
+        user_is_premium=user_data.get('premium')
+        print(new_website_id,user_is_premium)
+        task = upload_to_s3.delay(user_id, new_website_id, new_website_name,encoded_files,user_is_premium)
+        new_website.update({"task":task.id})
+        return make_response({"task_id":task.id,"website_name":new_website_name},200)
 
 @websites.route("/cancel",methods=['DELETE'])
 @jwt_required()
@@ -61,35 +78,32 @@ def canceling():
 
         if not request.is_json:
                 abort(400, {"message":'Invalid request data: expected JSON',"error":"data is not json"})
-        data = request.get_json()
 
-        if "website_id" not in data:
+        website_id = request.get_json()["website_id"]
+
+        if not website_id:
                 abort(400, {"message":'Missing website id',"error":"no website id"})
 
-        if not isinstance(data["website_id"],str):
+        if not isinstance(website_id,str):
                 abort(400, {"message":'Id must be a string',"error":"website id is not a string"})
-        website_id = request.get_json()["website_id"]
-        try:
-                website = FindWebsiteById(website_id)
-        except Exception as e:
-                error=str(e)
-                abort(404, {"message":"Website does not exist or is already deleted","error":error})
-        website_name=website.name
-        website.cancelled = True
-        try:
-                UpdateWebsiteCancelled(website_id)
-        except Exception as e:
-                error=str(e)
-                abort(404, {"message":"Website Already Cancelled","error":error})
-        revoke_task(website.task,website_id,website_name,user_id)
+
+        user_ref=db.get_document("users",user_id,ref=True)
+        website_doc=user_ref.collection("websites").document(website_id).get()
+        if not website_doc.exists:
+                abort(404, {"message":"Website does not exist or is already deleted","error":"Website not found"})
+
+        website = website_doc.to_dict()
+        website_id=website_doc.id
+        bucket =  s3.Bucket(Config.bucket_name)
+        website_name=website["name"]
+        revoke_task(website['task'],website_id,website_name,user_id)
+
         return make_response({"website_id":website_id,"website_name":website_name},200)
 
 
 @websites.route("/delete",methods=['DELETE'])
 @jwt_required()
 def deleting():
-        user_id = get_jwt_identity()
-        bucket =  s3.Bucket(Config.bucket_name)
 
         if not request.is_json:
                 abort(400, {"message":'Invalid request data: expected JSON',"error":"data is not json"})
@@ -100,27 +114,45 @@ def deleting():
 
         if not isinstance(data["website_id"],str):
                 abort(400, {"message":'Id must be a string',"error":"website id is not a string"})
+
+        user_id = get_jwt_identity()
+        user_ref=db.get_document("users",user_id,ref=True)
         website_id = request.get_json()["website_id"]
+        website_doc=user_ref.collection("websites").document(website_id).get()
+        website = website_doc.to_dict()
+        website_id=website_doc.id
+        bucket =  s3.Bucket(Config.bucket_name)
 
-        website = FindWebsiteById(website_id)
 
-        delete_from_s3.delay(user_id,website.name,website.id,delete_from_db=True)
+        delete_from_s3.delay(user_id,website["name"],website_id,delete_from_db=True)
 
-        return make_response(f"{website.name} deleted",200)
+        return make_response(f"{website['name']} deleted",200)
 
 
 @websites.route("/show",methods=['GET'])
 @jwt_required()
 def show():
         user_id = get_jwt_identity()
-        websites=GetAllWebsites(user_id)
+        user_ref=db.get_document("users",user_id,ref=True)
+        user_websites_snapshot=user_ref.collection("websites").get()
+        websites=[]
+        for user_website_doc in user_websites_snapshot:
+                # Get the data from the DocumentSnapshot for each individual document
+                user_website_data = user_website_doc.to_dict()
+                user_website_data['id']=user_website_doc.id
+                websites.append(user_website_data,)
+                # Now you can work with the data in the 'user_website_data' dictionary
+                print(user_website_data)
         return make_response(jsonify(websites),200)
 
 @websites.route("/getById/<website_id>",methods=['GET'])
 @jwt_required()
 def getById(website_id):
-        website=FindWebsiteById(website_id)
-        website=website.as_dict()
+        user_id = get_jwt_identity()
+        user_ref=db.get_document("users",user_id,True)
+        if user_ref == None:
+                return make_response({"error":"UserNotFound"},404)
+        website=user_ref.collection('websites').document(website_id).get().to_dict()
 
         return make_response(jsonify(website),200)
 
