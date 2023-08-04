@@ -83,8 +83,8 @@ def login_user():
     except Exception as e:
         print("error",e)
         return make_response(jsonify({"error":"Unexpected Error"}),500)
-
-    response=make_response(jsonify({'username':user.username}),200)
+    print(user)
+    response=make_response(jsonify({'username':user["username"]}),200)
     set_access_cookies(response,access_token)
     expiration_time=datetime.utcnow() + current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
     response.set_cookie('csrf_access_token', value=csrf_token, httponly=False,expires=expiration_time)
