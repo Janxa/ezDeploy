@@ -1,7 +1,6 @@
 import React from "react";
-import { useRef } from "react";
 const ProgressBar = ({ value, max }) => {
-	const barRef = useRef();
+	const progress = Math.round((value / max) * 100);
 
 	return (
 		<div className="h-4 w-full rounded-full bg-flat-800 relative ">
