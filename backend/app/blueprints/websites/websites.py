@@ -153,7 +153,7 @@ def getById(website_id):
         if user_ref == None:
                 return make_response({"error":"UserNotFound"},404)
         website=user_ref.collection('websites').document(website_id).get().to_dict()
-
+        website["id"]=website_id
         return make_response(jsonify(website),200)
 
 
