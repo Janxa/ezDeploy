@@ -9,6 +9,7 @@ from hashlib import sha256
 from secrets import token_urlsafe
 from datetime import datetime,timedelta
 from .errors import TokenExpiredError
+from app.tasks.send_email import send_email
 import pytz
 ph = PasswordHasher()
 
@@ -31,7 +32,7 @@ def register_user(username,email,password,):
           "validation_token":validation_tokens["hashed_token"],
           "validation_token_expiration":validation_tokens["expiration_date"]}
     db.add_document("users",user)
-    send__confirmation_email(user["username"],user["email"],validation_tokens["token"])
+    send_confirmation_email(user["username"],user["email"],validation_tokens["token"])
 
 def generate_dated_token():
 
@@ -81,25 +82,24 @@ def ValidatePasswordResetToken(token):
         raise e
 
 
-def send__confirmation_email(username,email,token):
+def send_confirmation_email(username,email,token):
     print(token)
     try:
-        msg = Message(sender=current_app.config["MAIL_DEFAULT_SENDER"],recipients = [email])
-        msg.subject = "Confirmation email"
-        msg.body = f"""Hello {username}, please click this link to complete your register:
+        subject = "Confirmation email"
+        body = f"""Hello {username}, please click this link to complete your registration:
                         Link {token}"""
-        mail.send(msg)
+        send_email.delay(subject=subject,body=body,email_adress=email)
+
         return  make_response("Email Successfully Sent",200)
     except Exception as  error:
         return make_response(str(error),400)
 
 def send_password_reset_email(username,email,token):
     try:
-        msg = Message(sender=current_app.config["MAIL_DEFAULT_SENDER"],recipients = [email])
-        msg.subject = "Password change request"
-        msg.body = f"""Hello {username}, please click this link to change your password:
+        subject = "Password change request"
+        body = f"""Hello {username}, please click this link to change your password:
                         Link {token}"""
-        mail.send(msg)
+        send_email.delay(subject=subject,body=body,email_adress=email)
         return  make_response("Email Successfully Sent",200)
     except Exception as  error:
         return make_response(str(error),400)
