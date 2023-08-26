@@ -6,7 +6,7 @@ from flask import (Blueprint,
 from operator import itemgetter
 import secrets
 from datetime import datetime
-from .services import register_user,verify_password,login,generate_dated_token,hash_password,send_password_reset_email,refresh_account_validation_token,ValidateValidationToken,ValidatePasswordResetToken,send__confirmation_email
+from .services import register_user,verify_password,login,generate_dated_token,hash_password,send_password_reset_email,refresh_account_validation_token,ValidateValidationToken,ValidatePasswordResetToken,send_confirmation_email
 from flask_jwt_extended import (create_access_token,set_access_cookies)
 from .errors import LoginError, TokenExpiredError,VerificationError
 from app import flask_firestore as db
@@ -43,7 +43,7 @@ def resend():
     try:
         token=generate_dated_token()
         refresh_account_validation_token(user_id,token)
-        send__confirmation_email(user["username"],user["email"],token["token"])
+        send_confirmation_email(user["username"],user["email"],token["token"])
 
     except Exception as e:
         error = e.args[0]
