@@ -4,7 +4,7 @@ from app.extensions.aws_s3 import s3
 from flask import current_app
 from celery import shared_task
 
-@shared_task(bind=True, max_retries=3, default_retry_delay=10)
+@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True,max_retries=3, default_retry_delay=10)
 def delete_from_s3(self, user_id, website_name, website_id, delete_from_db=False):
     try:
             with current_app.app_context():
@@ -18,6 +18,5 @@ def delete_from_s3(self, user_id, website_name, website_id, delete_from_db=False
                     user_ref=db.get_document("users",user_id,ref=True)
                     website_ref=user_ref.collection("websites").document(website_id)
                     website_ref.delete()
-    except Exception as e:
-
-        self.retry()
+    except Exception as e :
+        raise e

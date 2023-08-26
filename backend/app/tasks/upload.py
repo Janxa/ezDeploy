@@ -9,7 +9,7 @@ from flask import current_app
 from celery import shared_task
 import base64
 
-@shared_task(bind=True, max_retries=3, default_retry_delay=10)
+@shared_task( bind=True, max_retries=3, autoretry_for=(Exception,))
 def upload_to_s3(self,user_id,website_id, name, files,premium):
     with current_app.app_context():
         user_ref=db.get_document("users",user_id,ref=True)
@@ -46,8 +46,9 @@ def upload_to_s3(self,user_id,website_id, name, files,premium):
                     website_ref.update({"task":None,"link":index_link,"status":"success"})
 
             except Exception as e:
-                    print(e)
-                    raise
-        except:
-            website_ref.update({"task":None,"link":index_link,"status":"failure"})
-            delete_from_s3(user_id, name, website_id)
+                    raise e
+        except Exception as e:
+            if self.request.retries==3:
+                website_ref.update({"task":None,"link":index_link,"status":"failure"})
+                delete_from_s3(user_id, name, website_id)
+            raise e
