@@ -14,6 +14,8 @@ import ColorPalet from "./components/Common/colorpalet";
 import Landing from "./components/Pages/Landing/Landing";
 import Contact from "./components/Pages/Contact/Contact";
 import About from "./components/Pages/About/About";
+import ResetPassword from "./components/Pages/ResetPassword/ResetPassword";
+
 const router = createBrowserRouter([
 	{
 		path: "/",
@@ -33,6 +35,10 @@ const router = createBrowserRouter([
 			{
 				path: "account",
 				element: <Account />,
+			},
+			{
+				path: "reset-password",
+				element: <ResetPassword />,
 			},
 			{
 				path: "verify",
