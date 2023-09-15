@@ -87,7 +87,7 @@ function Contact() {
 		}
 	};
 	return (
-		<main className="mt-28 md:mt-32 w-11/12 m-auto flex  flex-col">
+		<main className="mt-28  w-4/5 sm:w-3/4 m-auto flex  flex-col">
 			<ToastContainer
 				position="top-right"
 				autoClose={5000}
@@ -98,10 +98,10 @@ function Contact() {
 				pauseOnHover
 			/>
 
-			<h2 className="bg-flat-700  w-4/5 md:w-1/2 lg:w-11/12 mx-auto text-2xl p-2 font-bold text-center  shadow-md rounded-md m-2">
+			<h2 className="bg-flat-700  w-full md:w-1/2 lg:w-11/12 mx-auto text-2xl p-2 font-bold text-center  shadow-md rounded-md m-2">
 				Contact
 			</h2>
-			<form className=" [&>*]:p-1  bg-flat-700 flex flex-col h-full  w-4/5  md:w-1/2 lg:w-11/12  overflow-hidden  mx-auto p-2 shadow-md rounded-md">
+			<form className=" [&>*]:p-1  bg-flat-700 flex flex-col h-full  w-full  md:w-1/2 lg:w-11/12  overflow-hidden  mx-auto p-2 shadow-md rounded-md">
 				<p>
 					Any question ? Send me an e-mail through this form and i'll answer you
 					asap !
@@ -140,10 +140,11 @@ function Contact() {
 					value={data["mail_content"]}
 					onChange={handleChange}
 					errors={errors["mail_content"]}
+					rows={6}
 				/>
 
 				<Button
-					extraStyle="font-medium text-sm my-2 py-2 rounded-xl w-1/2 m-auto"
+					extraStyle="font-medium text-sm my-2 py-2 rounded-xl w-1/2 lg:w-1/4 m-auto"
 					type="submit"
 					title="Send Email !"
 					onClick={handleSubmit}
