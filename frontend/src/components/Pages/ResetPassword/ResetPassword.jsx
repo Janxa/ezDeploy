@@ -11,7 +11,7 @@ function ResetPassword() {
 	const [emailSent, setEmailSent] = useState(false);
 	const [errors, setErrors] = useState("");
 	const [loading, setLoading] = useState(false);
-	const [timer, setTimer] = useState(0);
+	const [timer, setTimer] = useState(-1);
 	const schema = resetPasswordSchema;
 
 	const handleChange = ({ currentTarget: input }) => {
