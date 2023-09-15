@@ -132,7 +132,7 @@ function Uploader() {
 
 	return (
 		<form
-			className="flex flex-col w-5/6 mx-auto
+			className="flex flex-col w-3/4 md:w-1/2 mx-auto
 			mt-24 shadow-md min-h-48 p-4 justify-around bg-flat-700 rounded-xl"
 			enctype="multipart/form-data"
 			onSubmit={handleSubmit}
@@ -144,7 +144,7 @@ function Uploader() {
 				Select files to upload:
 			</label>
 			<div
-				className="flex flex-row items-center m-auto
+				className="flex  flex-col sm:flex-row items-center m-auto
 						justify-center
 						w-full
 				 "
@@ -152,10 +152,10 @@ function Uploader() {
 				<label
 					for="file-upload"
 					class={` bg-chili-500 hover:bg-chili-700 text-center text-sm sm:text-base cursor-pointer
-					  text-color-bg-dark-2  font-bold w-2/4 sm:w-1/4 mt-4  py-2 px-3 rounded-full
+					  text-color-bg-dark-2  font-bold w-1/3 sm:w-1/3 mt-4  py-2 px-2 md:px-3 rounded-full
 					  ${
 							files || loading
-								? "-translate-x-1/3 transition-all ease-in-out duration-700"
+								? "  sm:-translate-x-1/3 transition-all ease-in-out duration-700"
 								: " transition-all ease-in-out duration-700"
 						} `}
 				>
@@ -164,8 +164,8 @@ function Uploader() {
 				<div
 					className={
 						files || loading
-							? "opacity-100 translate-x-1/3 transition-all mt-4 ease-in-out duration-700 w-1/4"
-							: "-translate-x-1/3 opacity-0 "
+							? "opacity-100 translate-y-1/3 sm:translate-x-1/3 transition-all mt-4 ease-in-out duration-700 w-1/4"
+							: " -translate-y-1/3 sm:-translate-x-1/3 opacity-0 "
 					}
 				>
 					{zipFileName && !loading ? (
