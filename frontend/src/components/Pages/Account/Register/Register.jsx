@@ -5,14 +5,18 @@ import Input from "../../../Common/Input/Input.jsx";
 import Button from "../../../Common/Button";
 import EmailVerificationMessage from "./EmailVerificationMessage";
 import axios from "axios";
-import LoadingWheel from "../../../Common/LoadingWheel";
-function Register(props) {
-	const [data, setData] = useState({ username: "", email: "", password: "" });
+function Register({
+	data,
+	setData,
+	timer,
+	setTimer,
+	formSwitch,
+	loading,
+	setLoading,
+}) {
 	const [errors, setErrors] = useState({});
 	const [emailsent, setEmailsent] = useState(false);
-	const [emailresent, setEmailResent] = useState(false);
 	const schema = registerSchema;
-	const [loading, setLoading] = useState(false);
 
 	const handleChange = ({ currentTarget: input }) => {
 		if (errors[input.name]) {
@@ -23,7 +27,6 @@ function Register(props) {
 			});
 		}
 		setData((data) => {
-			console.log(data, [input.name], input.value);
 			return {
 				...data,
 				[input.name]: input.value,
@@ -31,15 +34,16 @@ function Register(props) {
 		});
 	};
 	const handleSubmit = async (event) => {
-		setLoading(true);
 		event.preventDefault();
+		setLoading(true);
+		const submitData = { ...data };
+		submitData.email = submitData.email.toLowerCase();
+
 		let errors = {};
 		const validationResult = schema.validate(data, { abortEarly: false });
 		if (validationResult.error) {
 			// Validation failed
-			console.error(validationResult.error.details);
 			const error_list = { ...errors };
-
 			for (let error of validationResult.error.details) {
 				error_list[error.context.label] = error.message;
 			}
@@ -68,10 +72,10 @@ function Register(props) {
 	};
 	const resendEmail = async () => {
 		try {
+			setTimer(90);
 			const res = await axios.post("/api/authentification/resend", {
 				email: data["email"],
 			});
-			setEmailResent(true);
 		} catch (error) {
 			console.log("Login error:", error);
 			if (error.response.status == 500) {
@@ -87,7 +91,7 @@ function Register(props) {
 	return (
 		<div className=" flex flex-col ">
 			{!emailsent ? (
-				<form onSubmit={handleSubmit} className="flex flex-col p-5 ">
+				<form onSubmit={handleSubmit} noValidate className="flex flex-col p-5 ">
 					<h2 className="font-bold text-2xl text-color-yellow-primary  self-center ">
 						Register
 					</h2>
@@ -113,6 +117,7 @@ function Register(props) {
 						icon={faEnvelope}
 						onChange={handleChange}
 						value={data.email}
+						type="email"
 						name="email"
 						id="email_input"
 						valid={errors["email"] ? false : true}
@@ -139,24 +144,22 @@ function Register(props) {
 							{errors["request"]}
 						</p>
 					)}
-					{loading ? (
-						<LoadingWheel />
-					) : (
-						<Button
-							title="Register"
-							type="submit"
-							disabled={
-								data.email && data.password && data.username ? false : true
-							}
-						/>
-					)}
+
+					<Button
+						title="Register"
+						type="submit"
+						loading={loading}
+						disabled={
+							data.email && data.password && data.username ? false : true
+						}
+					/>
 
 					<div className="self-end flex">
 						{" "}
 						<p className="text-sm font-light   "> Already got an account ?</p>
 						<button
 							className=" font-medium text-sm  ml-2 text-lila-300 underline  hover:text-lila-200  transition-colors duration-75"
-							onClick={() => props.formSwitch("login")}
+							onClick={() => formSwitch("login")}
 						>
 							Log in
 						</button>
@@ -166,6 +169,7 @@ function Register(props) {
 				<EmailVerificationMessage
 					resendEmail={resendEmail}
 					email={data.email}
+					timer={timer}
 				/>
 			)}
 		</div>

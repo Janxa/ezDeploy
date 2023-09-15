@@ -1,26 +1,15 @@
 import { useState } from "react";
 import { loginSchema } from "./login_schema";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-	faEnvelope,
-	faTriangleExclamation,
-	faKey,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faKey } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../../../../context/AuthProvider";
 import ErrorMessage from "./ErrorMessage";
-import axios from "axios";
-import EmailVerificationMessage from "../Register/EmailVerificationMessage";
 import Button from "../../../Common/Button";
 import Input from "../../../Common/Input/Input";
 import { useAuth } from "../../../../context/AuthProvider";
 import { Link } from "react-router-dom";
-import LoadingWheel from "../../../Common/LoadingWheel";
-function Login(props) {
-	const [data, setData] = useState({ email: "", password: "" });
+import AuthService from "../../../../services/authentification.service";
+function Login({ data, setData, formSwitch, loading, setLoading }) {
 	const [errors, setErrors] = useState({});
-	const [emailSent, setEmailSent] = useState(false);
-	const [loading, setLoading] = useState(false);
 	const { login } = useAuth();
 	const schema = loginSchema;
 	const navigate = useNavigate();
@@ -33,13 +22,20 @@ function Login(props) {
 				return updatedErrors;
 			});
 		}
-
 		setData((data) => {
 			return {
 				...data,
 				[input.name]: input.value,
 			};
 		});
+	};
+	const handleResend = async (event) => {
+		event.preventDefault();
+		setLoading(true);
+		console.log(data.email);
+		await AuthService.sendNewEmailToken({ email: data.email });
+		setLoading(false);
+		return;
 	};
 
 	const handleLogin = async (event) => {
@@ -48,10 +44,12 @@ function Login(props) {
 			event.preventDefault();
 			let errors = {};
 
-			const validationResult = schema.validate(data, { abortEarly: false });
+			const validationResult = schema.validate(
+				{ email: data.email, password: data.password },
+				{ abortEarly: false }
+			);
 			if (validationResult.error) {
-				// Validation failed
-				console.error(validationResult.error.details);
+				console.log(validationResult.error.details);
 				const error_list = { ...errors };
 
 				for (let error of validationResult.error.details) {
@@ -65,23 +63,18 @@ function Login(props) {
 			}
 
 			try {
-				await login(data["email"], data["password"]);
-				console.log("response from login ");
+				await login(data["email"].toLowerCase(), data["password"]);
 				navigate("/app/dashboard");
 			} catch (error) {
-				console.log("Login error:", error);
+				console.log("Hey ! Login error:", error);
+				console.log(
+					error.response.data["error"],
+					error.response.data["error"] == "User not validated"
+				);
 				if (error.response.status == 500) {
 					errors["request"] =
 						"Server Error. Check your connexion or try again later";
-				} else if (error.response.data["error"] == "User not validated") {
-					errors["request"] = (
-						<ErrorMessage
-							message="Your email has not been validated, please check your emails or "
-							onButtonClick={resendEmail}
-							buttonContent="Resend one"
-						/>
-					);
-				} else if (error.response) {
+				} else if (error.response.data.error) {
 					errors["request"] = error.response.data.error;
 					console.log(errors);
 				} else {
@@ -89,97 +82,72 @@ function Login(props) {
 					console.log(errors);
 				}
 				setErrors(errors);
-				console.log(errors);
+				setLoading(false);
+				return;
 			}
 		}
 		setLoading(false);
 	};
-	const resendEmail = async () => {
-		try {
-			const res = await axios.post("/api/authentification/resend", {
-				email: data["email"],
-			});
-			setEmailSent(true);
-		} catch (error) {
-			console.log("Login error:", error);
-			if (error.response.status == 500) {
-				errors["request"] =
-					"Server Error. Check your connexion or try again later";
-			} else if (error.request) {
-				errors["request"] = error.response.data.error;
-			} else {
-				errors["request"] = error.request.statusText;
-			}
-		}
-	};
 
 	return (
 		<div className="flex flex-col ">
-			{!emailSent ? (
-				<form onSubmit={handleLogin} className="flex flex-col p-5 ">
-					<h2 className="font-bold text-2xl text-flat-100  self-center">
-						Log in
-					</h2>
-					<label htmlFor="email" className="font-medium text-sm py-1">
-						Email:
-					</label>
-					<Input
-						onChange={handleChange}
-						type="email"
-						value={data.email}
-						name="email"
-						icon={faEnvelope}
-						id="email"
-						valid={errors["email"] ? false : true}
-						errors={errors["email"]}
-					/>
-					<div className="flex justify-between text-sm item-center py-1">
-						<label htmlFor="password" className="text-sm font-medium">
-							Password:
-						</label>
-						<Link
-							to="../reset-password"
-							className=" font-medium  text-lila-300 underline hover:text-lila-200  transition-colors duration-75  "
-						>
-							Forgot password ?
-						</Link>
-					</div>
-					<Input
-						icon={faKey}
-						type="password"
-						onChange={handleChange}
-						value={data.password}
-						name="password"
-						id="password"
-						valid={errors["password"] ? false : true}
-						errors={errors["password"]}
-					/>
-
-					{loading ? <LoadingWheel /> : <Button type="submit" title="Log in" />}
-					{errors["request"] && (
-						<p className="text-md my-2 text-center w-fulls text-invalid-500 self-center">
-							<FontAwesomeIcon icon={faTriangleExclamation} />
-							{errors["request"]}
-						</p>
-					)}
-					<div className="self-end flex">
-						{" "}
-						<p className="text-sm font-light   ">No account yet ? </p>
-						<button
-							className=" font-medium text-sm  ml-2 text-lila-300 underline  hover:text-lila-200  transition-colors duration-75"
-							onClick={() => props.formSwitch("register")}
-						>
-							Sign up
-						</button>
-					</div>
-				</form>
-			) : (
-				<EmailVerificationMessage
-					resend={true}
-					resendEmail={resendEmail}
-					email={data.email}
+			<form onSubmit={handleLogin} noValidate className="flex flex-col p-5 ">
+				<h2 className="font-bold text-2xl text-flat-100  self-center">
+					Log in
+				</h2>
+				<label htmlFor="email" className="font-medium text-sm py-1">
+					Email:
+				</label>
+				<Input
+					icon={faEnvelope}
+					onChange={handleChange}
+					value={data.email}
+					type="email"
+					name="email"
+					id="email"
+					valid={errors["email"] ? false : true}
+					errors={errors["email"]}
 				/>
-			)}
+				<div className="flex justify-between text-sm item-center py-1">
+					<label htmlFor="password" className="text-sm font-medium">
+						Password:
+					</label>
+					<Link
+						to="../reset-password"
+						className=" font-medium  text-lila-300 underline hover:text-lila-200  transition-colors duration-75  "
+					>
+						Forgot password ?
+					</Link>
+				</div>
+				<Input
+					icon={faKey}
+					type="password"
+					onChange={handleChange}
+					value={data.password}
+					name="password"
+					id="password"
+					valid={errors["password"] ? false : true}
+					errors={errors["password"]}
+				/>
+
+				<Button type="submit" loading={loading} title="Log in" />
+
+				{errors["request"] && (
+					<ErrorMessage
+						message={errors["request"]}
+						onButtonClick={handleResend}
+					/>
+				)}
+				<div className="self-end flex">
+					<p className="text-sm font-light">No account yet ? </p>
+					<button
+						className=" font-medium text-sm  ml-2 text-lila-300 underline  hover:text-lila-200  transition-colors duration-75"
+						onClick={() => formSwitch("register")}
+					>
+						Sign up
+					</button>
+				</div>
+			</form>
 		</div>
 	);
 }
