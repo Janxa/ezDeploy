@@ -1,5 +1,5 @@
 import Joi from "joi";
-import Schema from "../../../JOI/schema";
+import Schema from "../../../../utils/JOI/schema";
 
 const loginSchema = Joi.object({
 	email: Schema.email,
