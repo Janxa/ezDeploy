@@ -2,14 +2,17 @@ import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
 import { EmailVerificationSchema } from "./EmailVerification_schema";
 import axios from "axios";
-import VerifyEmailForm from "./VerifyEmailForm/VerifyEmailForm";
-
+import VerifyEmailForm from "./VerifyEmailForm";
+import AuthService from "../../../services/authentification.service";
+import Success from "./Success";
+import ResendVerifyEmail from "./ResendVerifyEmail";
 function EmailVerificationForm() {
 	const Code = useParams();
 	const [verificationCode, setVerificationCode] = useState(
 		Object.keys(Code).length !== 0 ? Code.verificationCode : ""
 	);
 	const [errors, setErrors] = useState(false);
+	const [resendUserId, setResendUserId] = useState(false);
 	const [verified, setVerified] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const schema = EmailVerificationSchema;
@@ -17,6 +20,14 @@ function EmailVerificationForm() {
 	const handleChange = ({ currentTarget: input }) => {
 		setErrors(false);
 		setVerificationCode(input.value);
+	};
+	const handleResend = async (event) => {
+		event.preventDefault();
+		setLoading(true);
+		await AuthService.sendNewEmailToken({ user_id: resendUserId });
+		setResendUserId(false);
+		setLoading(false);
+		return;
 	};
 	const handleSubmit = async (event) => {
 		setLoading(true);
@@ -35,10 +46,16 @@ function EmailVerificationForm() {
 				`/api/authentification/verify/${verificationCode}`
 			);
 			setVerified(res.data);
-		} catch (error) {
-			if (error.response.status == 500)
+		} catch (e) {
+			if (e.response.status == 500)
 				error = "No response, server might be offline, try again later";
-			else error = error.response.data.error;
+			if (e.response.status == 401) {
+				let user_id = e.response.data.user_id;
+				setResendUserId(user_id);
+				setLoading(false);
+
+				return;
+			} else error = e.response.data.error;
 			setErrors(error);
 			setLoading(false);
 			return;
@@ -46,34 +63,24 @@ function EmailVerificationForm() {
 		setLoading(false);
 	};
 	const content = () => {
-		if (!verified)
-			return (
-				<VerifyEmailForm
-					handleSubmit={handleSubmit}
-					handleChange={handleChange}
-					verificationCode={verificationCode}
-					errors={errors}
-					loading={loading}
-				/>
-			);
-		return (
-			<div className="bg-flat-700  w-3/4 md:w-1/2 lg:w-1/3 m-auto p-5 shadow-md rounded-md flex flex-col ">
-				<h2 className="font-bold text-2xl text-chili-500 self-center mb-2">
-					Success
-				</h2>
-				<p>{verified}</p>
-				<p>
-					You can now{" "}
-					<Link
-						className=" font-medium  text-color-blue-primary underline  decoration-dashed  "
-						to="/app/account"
-						state={{ disp: "login" }}
-					>
-						Log in
-					</Link>
-				</p>
-			</div>
-		);
+		if (!verified) {
+			if (!resendUserId)
+				return (
+					<VerifyEmailForm
+						handleSubmit={handleSubmit}
+						handleChange={handleChange}
+						verificationCode={verificationCode}
+						resendUserId={resendUserId}
+						errors={errors}
+						loading={loading}
+					/>
+				);
+			else
+				return (
+					<ResendVerifyEmail handleResend={handleResend} isLoading={loading} />
+				);
+		}
+		return <Success />;
 	};
 	return (
 		<main className="mx-auto mt-48 md:mt-32 w-11/12 flex">{content()}</main>
