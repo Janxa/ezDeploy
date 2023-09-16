@@ -1,6 +1,6 @@
-import Input from "../../../Common/Input/Input";
-import Button from "../../../Common/Button";
-import LoadingWheel from "../../../Common/LoadingWheel";
+import Input from "../../Common/Input/Input";
+import Button from "../../Common/Button";
+import LoadingWheel from "../../Common/LoadingWheel";
 const VerifyEmailForm = ({
 	handleSubmit,
 	handleChange,
@@ -30,6 +30,7 @@ const VerifyEmailForm = ({
 					{errors}
 				</p>
 			)}
+
 			{loading ? (
 				<LoadingWheel />
 			) : (
