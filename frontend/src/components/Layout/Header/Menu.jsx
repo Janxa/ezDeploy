@@ -22,11 +22,11 @@ function Menu({ visibleMobile, setVisibleMobile }) {
 					<Link to="contact">Contact</Link>
 				</li>
 				<li className="flex font-bold mb-4 md:mb-0  items-center justify-around gap-x-4 lg:gap-x-8 self-center underline ">
-					<div className="text-lila-200 hover:text-lila-300 transition-colors ease-in-out duration-100">
+					<div className="text-lila-200 flex items-center hover:text-lila-300 transition-colors ease-in-out duration-100">
 						<Link to="dashboard">Dashboard</Link>
 						<FontAwesomeIcon icon={faTable} className="fa-xs ml-2 " />
 					</div>
-					<div className="text-lila-200 hover:text-lila-300 transition-colors ease-in-out duration-100">
+					<div className="text-lila-200 flex items-center hover:text-lila-300 transition-colors ease-in-out duration-100">
 						<Link to="uploader">Upload </Link>
 						<FontAwesomeIcon
 							icon={faArrowUpFromBracket}
