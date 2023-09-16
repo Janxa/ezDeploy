@@ -21,20 +21,13 @@ const Dashboard = () => {
 	const [loading, setLoading] = useState(false);
 
 	const navigate = useNavigate();
-
-	useEffect(() => {
-		console.log("streamData updated:", streamData);
-	}, [streamData]);
-
 	const separateWebsites = (data) => {
 		const pendingWebsites = [];
 		const treatedWebsites = [];
 		data.forEach((item) => {
-			console.log("item=>", item);
 			if (item.task == null) treatedWebsites.push(item);
 			else pendingWebsites.push(item);
 		});
-		console.log({ pendingWebsites, treatedWebsites });
 		return { pendingWebsites, treatedWebsites };
 	};
 	//inital websites fetch
@@ -42,7 +35,6 @@ const Dashboard = () => {
 		setLoading(true);
 		WebsiteService.getWebsites().then(
 			(response) => {
-				console.log("getWebsitesResponse", response);
 				let data = response.data;
 				setLoading(false);
 				if (!data) {
@@ -55,7 +47,6 @@ const Dashboard = () => {
 				setPendingWebsites(pendingWebsites);
 			},
 			(error) => {
-				console.log(error);
 				if (error.code == "ERR_NETWORK" || error.response.status == 401) {
 					AuthService.logout();
 					return navigate("/app/account", {
@@ -76,20 +67,17 @@ const Dashboard = () => {
 		const data = JSON.parse(event.data);
 
 		const taskId = data.task_id;
-		console.log("stream=>", data);
-		console.log("pendingWebsites", pendingWebsites);
 		if (data.state.toLowerCase() == "progress")
 			setStreamData((prevStreamData) => ({
 				...prevStreamData,
 				[taskId]: data,
 			}));
 		else if (data.state.toLowerCase() == "success") {
-			console.log("SUCCESS, Searching ", taskId, "in", pendingWebsites);
 			const uploadedWebsite = pendingWebsites.find(
 				(website) => website.task == taskId
 			);
 			const website_id = uploadedWebsite.id;
-			console.log(pendingWebsites, website_id, uploadedWebsite);
+
 			const newStreamData = { ...streamData };
 			const newPendingWebsites = pendingWebsites.filter(
 				(website) => website.task !== taskId
@@ -99,9 +87,7 @@ const Dashboard = () => {
 			setPendingWebsites(newPendingWebsites);
 
 			WebsiteService.getWebsiteById(website_id).then((response) => {
-				console.log("getWebsitesByIdResponse", response);
 				const newWebsites = [...websites];
-				console.log("websites =>", websites, newPendingWebsites);
 				let data = response.data;
 				newWebsites.push(data);
 				setWebsites(newWebsites);
@@ -123,26 +109,20 @@ const Dashboard = () => {
 					handleEvent(event);
 				};
 				eventSource.onerror = (err) => {
-					console.log("Event Source failed: ", err);
 					if (eventSource.readyState === EventSource.CLOSED) {
-						console.log("Event Source closed");
 					} else {
-						console.log("Event Source not closed");
 					}
 					eventSource.close();
 				};
 				eventSource.onclose = (event) => {
 					const lastEvent = JSON.parse(event.lastEventId);
-					console.log("last event data", lastEvent.data);
 				};
 
-				console.log("event source setup");
 				return eventSource;
 			});
 		}
 		return () => {
 			eventSources.forEach((eventSource) => {
-				console.log("closing", eventSource);
 				eventSource.close();
 			});
 		};
@@ -176,7 +156,6 @@ const Dashboard = () => {
 	};
 	const showDetails = (websiteName) => {
 		if (Object.keys(details)[0] == websiteName) {
-			console.log("reset");
 			setDetails("");
 			return;
 		}
@@ -184,18 +163,24 @@ const Dashboard = () => {
 		return;
 	};
 	const handleDelete = async (website_id) => {
-		const previousWebsites = { ...websites };
-		setWebsites((prevWebsites) =>
-			prevWebsites.filter((website) => website.id !== website_id)
-		);
+		const previousWebsites = [...websites];
+
 		try {
+			setWebsites((prevWebsites) =>
+				prevWebsites.filter((website) => website.id !== website_id)
+			);
 			await WebsiteService.deleteWebsite(website_id);
 		} catch (error) {
 			if (error.response && error.response.status === 404) {
+			} else if (error.code == "ERR_NETWORK" || error.response.status == 401) {
+				AuthService.logout();
+				return navigate("/app/account", {
+					state: { error: "Session expired, please reconnect" },
+				});
 			} else {
 				setWebsites(previousWebsites);
 				// Handle other errors
-				console.log("Error deleting website:", error);
+
 				// Or show a message to the user
 			}
 		}
@@ -213,19 +198,24 @@ const Dashboard = () => {
 				setWebsites((prevWebsites) =>
 					prevWebsites.filter((website) => website.id !== website_id)
 				);
+			}
+			if (error.code == "ERR_NETWORK" || error.response.status == 401) {
+				AuthService.logout();
+				return navigate("/app/account", {
+					state: { error: "Session expired, please reconnect" },
+				});
 			} else {
 				// Handle other errors
-				console.log("Error cancelling task:", error);
 				// Or show a message to the user
 			}
 		}
 	};
 	return (
-		<main className="mt-10 md:mt-32 w-full flex flex-col  ">
-			<h2 className="bg-flat-700  w-4/5 md:w-1/2 lg:w-11/12 mx-auto p-2 text-2xl  font-bold text-center  shadow-md rounded-md m-2">
+		<main className="mt-20 md:mt-32 w-full flex flex-col  ">
+			<h2 className="bg-flat-700  w-4/5 md:w-1/2 lg:w-10/12 mx-auto p-2 text-2xl  font-bold text-center  shadow-md rounded-md m-2">
 				Dashboard
 			</h2>
-			<div className="bg-flat-700 w-4/5  md:w-1/2 lg:w-11/12  mx-auto p-5 shadow-md rounded-md">
+			<div className="bg-flat-700 w-4/5  md:w-1/2 lg:w-10/12  mx-auto p-5 shadow-md rounded-md">
 				{websites.length === 0 && pendingWebsites.length === 0 ? (
 					loading ? (
 						<LoadingWheel />
@@ -271,11 +261,13 @@ const Dashboard = () => {
 										<div className="w-full flex items-center col-span-3">
 											{renderProgress(item)}
 										</div>
-										<Button
-											extraStyle=""
-											title="Cancel"
-											onClick={() => handleCancel(item.id)}
-										/>
+										<div className="flex justify-center">
+											<Button
+												extraStyle=""
+												title="Cancel"
+												onClick={() => handleCancel(item.id)}
+											/>
+										</div>
 									</div>
 								))}
 							</div>
