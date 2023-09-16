@@ -15,7 +15,6 @@ function RenderTreatedWebsites({ websites, handleDelete }) {
 	const [isAnimating, setIsAnimating] = useState(false);
 	const dropdownRef = useRef(null);
 	const handleGearIconClick = (key) => {
-		console.log("gitkey=", key, show, isAnimating);
 		if (!isAnimating) {
 			setShow(show === key ? null : key);
 			setIsAnimating(true);
@@ -77,7 +76,7 @@ function RenderTreatedWebsites({ websites, handleDelete }) {
 							onClick={() => handleGearIconClick(key)}
 							ref={dropdownRef}
 							className={`${show === key ? "rounded-t-full" : "rounded-full"}
-									 bg-chili-400 w-1/2 relative  px-4  lg:w-3/4 py-1 flex justify-end
+									 bg-chili-400 w-1/2 relative  px-4  lg:w-1/2 py-1 flex justify-end
 									 items-center cursor-pointer transition-all ease-in-out duration-200`}
 						>
 							<FontAwesomeIcon
