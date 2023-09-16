@@ -1,4 +1,13 @@
-function Button({ title, onClick, type, extraStyle, disabled = false }) {
+import LoadingWheel from "./LoadingWheel";
+
+function Button({
+	title,
+	onClick,
+	type,
+	extraStyle,
+	disabled = false,
+	loading = false,
+}) {
 	const style = `  ${
 		extraStyle ? extraStyle : "font-medium text-sm my-2 p-2 rounded-xl    "
 	} ${
@@ -7,7 +16,9 @@ function Button({ title, onClick, type, extraStyle, disabled = false }) {
 			: "bg-chili-500 hover:bg-chili-600 transition-all ease-in-out duration-500"
 	} `;
 
-	return (
+	return loading ? (
+		<LoadingWheel />
+	) : (
 		<button disabled={disabled} type={type} onClick={onClick} className={style}>
 			{title}
 		</button>
