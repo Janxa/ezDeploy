@@ -1,16 +1,21 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-function EmailVerificationMessage({ email, resendEmail }) {
+function EmailVerificationMessage({
+	email,
+	resendEmail,
+	timer,
+	resend = false,
+}) {
 	return (
 		<div className="flex flex-col bg-flat-700 items-center rounded-md text-center">
 			<p className="py-4 w-full rounded-t-md  bg-chili-500 ">
-				<b className="text-2xl  ">Congratulations ! </b>
+				<b className="text-2xl  ">Confirm your email adress </b>
 			</p>
 			<div className="m-4 pt-2 gap-4 flex flex-col justify-center items-center ">
 				<p>
-					You've successfully registered ! To complete the registration process,
-					please check the mail we sent at your adress :
+					{resend ? false : "You've successfully registered !"} To complete the
+					registration process, please check the mail we sent at your adress :
 				</p>
 				<p className="rounded-md px-3 py-2  bg-lila-100">
 					<FontAwesomeIcon icon={faEnvelope} className=" text-lila-500 " />
@@ -27,9 +32,14 @@ function EmailVerificationMessage({ email, resendEmail }) {
 					Nothing in your inbox ?
 					<button
 						onClick={resendEmail}
-						className="pl-2 font-bold underline decoration-dashed text-lila-300 hover:text-lila-100 transition-all ease-in-out duration-200"
+						disabled={timer > 0 ? true : false}
+						className={`pl-2 underline decoration-dashed ${
+							timer > 0
+								? "text-neutral-400 cursor-default"
+								: "text-lila-300 hover:text-lila-100 font-bold "
+						} transition-all ease-in-out duration-200`}
 					>
-						Resend email
+						Resend email {timer > 0 ? `(${timer}) ` : false}
 					</button>
 				</p>
 			</div>
