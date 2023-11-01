@@ -44,8 +44,6 @@ def login(email, password):
     except (db.UserNotFoundError , exceptions.VerifyMismatchError)  as e :
             raise LoginError()
     return user
-    # if ph.check_needs_rehash(hash):
-    #      db.set_password_hash_for_user(user, ph.hash(password))
 
 def send__confirmation_email(username,email,token):
     print(token)
